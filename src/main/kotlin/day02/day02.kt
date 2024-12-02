@@ -11,10 +11,12 @@ private fun isReportSafe(report: List<Int>): Boolean {
     return diffs.all { it in 1..3 } || diffs.all { it in -3..-1 }
 }
 
+private fun dropIndex(list: List<Int>, idx: Int): List<Int> =
+    list.take(idx) + list.takeLast(list.size - idx - 1)
+
 private fun isReportAlmostSafe(report: List<Int>): Boolean =
     report.indices
-        .map { idx -> report.take(idx) + report.takeLast(report.size - idx - 1) }
-        .any(::isReportSafe)
+        .any { idx -> isReportSafe(dropIndex(report, idx)) }
 
 
 fun answer1(reports: List<List<Int>>): Int =
