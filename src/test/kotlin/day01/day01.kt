@@ -3,21 +3,21 @@
 
 package day01
 
-import common.parseColumns2
+import common.parseColumns
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class Day01Test {
     private companion object {
-        val lists = parseColumns2(
-                """
+        val lists = parseColumns(
+            """
             3   4
             4   3
             2   5
             1   3
             3   9
             3   3
-        """.trimIndent(), String::toInt, String::toInt)
+            """.trimIndent(), String::toInt, String::toInt)
     }
 
     @Test

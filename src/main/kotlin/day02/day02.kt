@@ -3,17 +3,22 @@
 
 package day02
 
+import common.allListDrops
+import common.day
 import common.parseGrid
+import common.readInput
+
+private const val Lower = 1
+private const val Upper = 3
 
 private fun isReportSafe(report: List<Int>): Boolean {
     val diffs = report.zipWithNext()
         .map { (first, second) -> first - second }
-    return diffs.all { it in 1..3 } || diffs.all { it in -3..-1 }
+    return diffs.all { it in Lower..Upper } || diffs.all { it in -Upper..-Lower }
 }
 
 private fun isReportAlmostSafe(report: List<Int>): Boolean =
-    report.indices
-        .map { idx -> report.take(idx) + report.takeLast(report.size - idx - 1) }
+    report.allListDrops()
         .any(::isReportSafe)
 
 
@@ -25,7 +30,7 @@ fun answer2(reports: List<List<Int>>,): Int =
     reports.count(::isReportAlmostSafe)
 
 fun main() {
-    val input = object {}.javaClass.getResource("/day02.txt")!!.readText()
+    val input = readInput({}::class.day())
     val reports = parseGrid(input, String::toInt)
 
     println("--- Day 2: Red-Nosed Reports ---")
