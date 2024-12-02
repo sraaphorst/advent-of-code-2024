@@ -15,3 +15,10 @@ fun <C1, C2> parseColumns2(input: String,
 
 fun <T> Collection<T>.toFrequencyMap(): Map<T, Int> =
     groupingBy { it }.eachCount()
+
+fun <T> parseGrid(input: String, toElem: (String) -> T): List<List<T>> =
+    input.split('\n')
+        .map { line ->
+            line.trim()
+                .split("""\s+""".toRegex())
+                .map { toElem(it) } }
