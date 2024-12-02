@@ -3,10 +3,11 @@
 
 package day01
 
-import common.parseColumns2
+import common.day
+import common.parseColumns
+import common.readInput
 import common.toFrequencyMap
 import kotlin.math.abs
-
 
 fun answer1(list1: List<Int>, list2: List<Int>): Int =
     list1.sorted().zip(list2.sorted())
@@ -20,8 +21,8 @@ fun answer2(list1: List<Int>, list2: List<Int>): Int {
 }
 
 fun main() {
-    val input = object {}.javaClass.getResource("/day01.txt")!!.readText()
-    val (list1, list2) = parseColumns2(input, String::toInt, String::toInt)
+    val input = readInput({}::class.day())
+    val (list1, list2) = parseColumns(input, String::toInt, String::toInt)
 
     println("--- Day 1: Historian Hysteria ---")
 
