@@ -6,32 +6,40 @@ package day03
 import common.day
 import common.readInput
 
-private val regex = Regex("""mul\((\d{1,3}),(\d{1,3})\)""")
+/**
+ * We want to turn off processing for substrings of the form:
+ * 1. don't()...do()
+ * 2. don't()... to the end of the input
+ * These might span multiple lines, so we eliminate all newlines first.
+ */
+private fun preprocess(input: String): String =
+    input.replace("\n", "")
+        .replace(Regex("""don't\(\).*?do\(\)"""), "")
+        .replace(Regex("""don't\(\).*"""), "")
 
-fun extractMul(input: String): List<Pair<Int, Int>> =
-    regex.findAll(input)
-        .map { matchResult ->
+private fun calculateMul(input: String): Int =
+    Regex("""mul\((\d{1,3}),(\d{1,3})\)""").findAll(input)
+        .sumOf { matchResult ->
             val (a, b) = matchResult.destructured
-            Pair(a.toInt(), b.toInt())
-        }.toList()
+            a.toInt() * b.toInt()
+        }
 
 
-fun answer1(muls: List<Pair<Int, Int>>): Int =
-    muls.sumOf { (first, second) -> first * second }
+fun answer1(input: String): Int =
+    calculateMul(input)
 
 
-fun answer2(mult: List<Pair<Int, Int>>): Int =
-    TODO()
+fun answer2(input: String): Int =
+    answer1(preprocess(input))
 
 fun main() {
     val input = readInput({}::class.day())
-    val muls = extractMul(input)
 
     println("--- Day 3: Mull It Over ---")
 
     // Answer 1: 173785482
-    println("Part 1: ${answer1(muls)}")
+    println("Part 1: ${answer1(input)}")
 
-    // Answer 2: 430
-//    println("Part 2: ${answer2(reports)}")
+    // Answer 2: 83158140
+    println("Part 2: ${answer2(input)}")
 }
