@@ -13,21 +13,19 @@ import common.readInput
  * These might span multiple lines, so we eliminate all newlines first.
  */
 private fun preprocess(input: String): String =
-    input.replace("\n", "")
+    input.replace(Regex("""[\r\n]+"""), "")
         .replace(Regex("""don't\(\).*?do\(\)"""), "")
         .replace(Regex("""don't\(\).*"""), "")
 
+/**
+ * Calculates the sum of products from mul(a, b) patterns in the input.
+ */
 private fun calculateMul(input: String): Int =
     Regex("""mul\((\d{1,3}),(\d{1,3})\)""").findAll(input)
-        .sumOf { matchResult ->
-            val (a, b) = matchResult.destructured
-            a.toInt() * b.toInt()
-        }
-
+        .sumOf { it.destructured.let { (a, b) -> a.toInt() * b.toInt() } }
 
 fun answer1(input: String): Int =
     calculateMul(input)
-
 
 fun answer2(input: String): Int =
     answer1(preprocess(input))
