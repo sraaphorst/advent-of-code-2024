@@ -6,7 +6,7 @@ package day03
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class Day01Test {
+class Day03Test {
     private companion object {
         val input1 =
             """

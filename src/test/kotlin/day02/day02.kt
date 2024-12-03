@@ -7,7 +7,7 @@ import common.parseGrid
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class Day01Test {
+class Day02Test {
     private companion object {
         val reports = parseGrid(
             """
