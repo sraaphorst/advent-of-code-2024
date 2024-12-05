@@ -15,18 +15,28 @@ fun <T> List<T>.allListDrops(): Sequence<List<T>> =
     indices.asSequence()
         .map { idx -> this.take(idx) + this.takeLast(this.size - idx - 1) }
 
+/**
+ * Transpose the grid, making the rows the columns and the columns the rows, i.e.
+ * result(i,j) = this(j,i)
+ */
 fun <T> List<List<T>>.transpose(): List<List<T>> =
     indices.map { col -> map { it[col] } }
 
 fun List<String>.transposeStrings(): List<String> =
     this[0].indices.map { col -> map { it[col] }.joinToString("") }
 
+/**
+ * Reverse the order of each of the sublists.
+ */
 fun <T> List<List<T>>.reflectHorizontal(): List<List<T>> =
     map(List<T>::reversed)
 
 fun List<String>.reflectHorizontalStrings(): List<String> =
     map(String::reversed)
 
+/**
+ * Reverse the order of the lists.
+ */
 fun <T> List<List<T>>.reflectVertical(): List<List<T>> =
     reversed()
 
@@ -111,6 +121,10 @@ fun <T> List<List<T>>.getNEEntries(): List<List<T>> =
 fun List<String>.getNEStrings(): List<String> =
     getSWStrings().map(String::reversed)
 
+/**
+ * Given a rectangular matrix (wherein each sublist must be the same length), return
+ * all windows of size m x n (m rows, n columns).
+ */
 fun <T> List<List<T>>.extractBlocks(m: Int, n: Int = m): List<List<List<T>>> {
     // Take m rows.
     val rowBlocks = windowed(m, 1)
