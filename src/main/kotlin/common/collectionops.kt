@@ -16,6 +16,12 @@ fun <T> List<T>.allListDrops(): Sequence<List<T>> =
         .map { idx -> this.take(idx) + this.takeLast(this.size - idx - 1) }
 
 /**
+ * Get the middle element of a list, rounded down if necessary.
+ */
+fun <T> List<T>.middle(): T =
+    get(size / 2)
+
+/**
  * Transpose the grid, making the rows the columns and the columns the rows, i.e.
  * result(i,j) = this(j,i)
  */

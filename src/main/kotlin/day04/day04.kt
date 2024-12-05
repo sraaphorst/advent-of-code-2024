@@ -83,9 +83,9 @@ fun main() {
 
     println("--- Day 4: Ceres Search ---")
 
-    // Answer 1: 173785482
+    // Answer 1: 2370
     println("Part 1: ${answer1(input)}")
 
-    // Answer 2: 83158140
+    // Answer 2: 1908
     println("Part 2: ${answer2(input)}")
 }
