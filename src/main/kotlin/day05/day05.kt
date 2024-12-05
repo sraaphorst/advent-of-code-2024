@@ -89,8 +89,33 @@ fun answer1b(violationRules: OrderingRules, updatesList: List<Updates>): Int =
     updatesList.filter { update -> passesViolation(update, violationRules) }
         .sumOf { it[it.size / 2] }
 
-fun answer2(input: List<String>): Int =
-    TODO()
+/**
+ * Idea:
+ * Gather all elements.
+ * Keep picking the element that doesn't appear in any other violation for remaining elements.
+ * Add it to the reordering.
+ * Remove it from the remaining element set.
+ */
+fun reorder(updates: Updates, violationRules: OrderingRules): List<Int> {
+    tailrec fun aux(
+        reorder: List<Int> = emptyList(),
+        remaining: Set<Int> = updates.toSet()
+    ): Updates {
+        if (remaining.isEmpty()) return reorder
+        val disallowed = remaining.flatMap { violationRules[it] ?: emptySet() }
+        val candidates = remaining - disallowed
+        if (candidates.isEmpty()) throw RuntimeException("No candidate for reordering.")
+        val candidate = candidates.first()
+        return aux(reorder + candidate, remaining - candidate)
+    }
+    return aux()
+}
+
+fun answer2(violationRules: OrderingRules, updatesList: List<Updates>): Int =
+    updatesList.filterNot { passesViolation(it, violationRules) }
+        .map { reorder(it, violationRules) }
+        .sumOf { it[it.size / 2] }
+
 
 fun main() {
     val input = readInput({}::class.day()).trim()
@@ -104,5 +129,5 @@ fun main() {
     println("Part 1: ${answer1(orderingRules, updateList)}")
 
     // Answer 2: 83158140
-//    println("Part 2: ${answer2(input)}")
+    println("Part 2: ${answer2(violationRules, updateList2)}")
 }

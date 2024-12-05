@@ -54,8 +54,8 @@ class Day05Test {
         assertEquals(143, answer1b(violationRules, updatesList2))
     }
 
-//    @Test
-//    fun `Problem 2 example`() {
-//        assertEquals(9, answer2(grid))
-//    }
+    @Test
+    fun `Problem 2 example`() {
+        assertEquals(123, answer2(violationRules, updatesList2))
+    }
 }
