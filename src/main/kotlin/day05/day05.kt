@@ -42,8 +42,10 @@ private fun parseUpdates(input: String): List<Updates> =
         .map { line -> line.trim().split(',').map(String::toInt) }
 
 fun parse(input: String): Pair<OrderingRules, List<Updates>> {
-    val (rules, updates) = input.split("\n\n")
-    return parseOrderingRules(rules) to parseUpdates(updates)
+    val (rulesString, updatesString) = input.split("\n\n")
+    val rules = parseOrderingRules(rulesString)
+    val updates = parseUpdates(updatesString)
+    return rules to updates
 }
 
 /**
@@ -78,16 +80,15 @@ fun parse(input: String): Pair<OrderingRules, List<Updates>> {
 
 // 1 5 18 3 2
 // 5 9 3 2
-fun passes(updates: Updates, orderingRules: OrderingRules): Boolean {
+fun passes(updates: Updates, orderingRules: OrderingRules): Boolean =
     // Start at the end and keep track of what pages are not allowed to appear.
-    return updates.reversed().fold(emptySet<Int>()) { seen, page ->
+    updates.fold(emptySet<Int>()) { seen, page ->
         val notSeenEarlier = orderingRules[page] ?: emptySet()
         if (notSeenEarlier.any { it in seen }) {
             return false
         }
-        seen + page // Accumulate the current page
-    }.let { true } // If fold completes without returning false, return true
-}
+        seen + page
+    }.let { true }
 
 fun answer1(orderingRules: OrderingRules, updatesList: List<Updates>): Int =
     updatesList.filter { update -> passes(update, orderingRules) }
