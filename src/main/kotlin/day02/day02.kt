@@ -26,7 +26,7 @@ fun answer1(reports: List<List<Int>>): Int =
     reports.count(::isReportSafe)
 
 
-fun answer2(reports: List<List<Int>>,): Int =
+fun answer2(reports: List<List<Int>>): Int =
     reports.count(::isReportAlmostSafe)
 
 fun main() {

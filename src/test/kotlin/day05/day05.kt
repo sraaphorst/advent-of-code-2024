@@ -1,0 +1,57 @@
+// Advent of Code 2024, Day 05.
+// By Sebastian Raaphorst, 2024.
+
+package day05
+
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+
+class Day05Test {
+    private companion object {
+        private val input =
+            """
+            47|53
+            97|13
+            97|61
+            97|47
+            75|29
+            61|13
+            75|53
+            29|13
+            97|29
+            53|29
+            61|53
+            97|53
+            61|29
+            47|13
+            75|47
+            97|75
+            47|61
+            75|61
+            47|29
+            75|13
+            53|13
+            
+            75,47,61,53,29
+            97,61,53,29,13
+            75,29,13
+            75,97,47,61,53
+            61,13,29
+            97,13,75,29,47
+            """.trimIndent().trim()
+
+        private val data2 = parseViolation(input)
+        val violationRules = data2.first
+        val updatesList = data2.second
+    }
+
+    @Test
+    fun `Problem 1 example`() {
+        assertEquals(143, answer1(violationRules, updatesList))
+    }
+
+    @Test
+    fun `Problem 2 example`() {
+        assertEquals(123, answer2(violationRules, updatesList))
+    }
+}
