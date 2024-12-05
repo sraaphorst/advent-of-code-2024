@@ -40,14 +40,18 @@ class Day05Test {
             97,13,75,29,47
             """.trimIndent().trim()
 
-        private val data = parse(input)
+        private val data = parseOrdering(input)
         val orderingRules = data.first
-        val updatesList = data.second
+        val updatesList1 = data.second
+        private val data2 = parseViolation(input)
+        val violationRules = data2.first
+        val updatesList2 = data2.second
     }
 
     @Test
     fun `Problem 1 example`() {
-        assertEquals(143, answer1(orderingRules, updatesList))
+        assertEquals(143, answer1(orderingRules, updatesList1))
+        assertEquals(143, answer1b(violationRules, updatesList2))
     }
 
 //    @Test

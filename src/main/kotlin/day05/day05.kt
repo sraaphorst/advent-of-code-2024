@@ -26,72 +26,67 @@ private fun parseOrderingRules(input: String): OrderingRules =
         }
         .groupBy(Pair<Int, Int>::first, Pair<Int, Int>::second)
         .mapValues { it.value.toSet() }
+
 // These are failure rules: for entry a, if any entry in its list appears after it, failure.
-//private fun parseOrderingRules(input: String): OrderingRules =
-//    input.lines()
-//        .filter(String::isNotBlank)
-//        .map { line ->
-//            val (a, b) = line.trim().split('|').map(String::toInt)
-//            b to a
-//        }
-//        .groupBy(Pair<Int, Int>::first, Pair<Int, Int>::second)
-//        .mapValues { (_, b) -> b.toSet() }
+private fun parseViolationRules(input: String): OrderingRules =
+    input.lines()
+        .filter(String::isNotBlank)
+        .map { line ->
+            val (a, b) = line.trim().split('|').map(String::toInt)
+            b to a
+        }
+        .groupBy(Pair<Int, Int>::first, Pair<Int, Int>::second)
+        .mapValues { (_, b) -> b.toSet() }
+
 
 private fun parseUpdates(input: String): List<Updates> =
     input.lines()
         .map { line -> line.trim().split(',').map(String::toInt) }
 
-fun parse(input: String): Pair<OrderingRules, List<Updates>> {
+fun parseOrdering(input: String): Pair<OrderingRules, List<Updates>> {
     val (rulesString, updatesString) = input.split("\n\n")
     val rules = parseOrderingRules(rulesString)
     val updates = parseUpdates(updatesString)
     return rules to updates
 }
 
-/**
- * Determine if the page updates pass, i.e. there are no violations where
- * a page is printed after
- */
-//private fun passes(updates: Updates, violationRules: OrderingRules): Boolean =
-//    updates.indices.all { idx ->
-//        val page = updates[idx]
-//        val remainList = updates.drop(idx + 1)
-//        val pageViolations = violationRules[page] ?: emptySet()
-//        !remainList.any { it in pageViolations }
-//    }
-//private fun passes(updates: Updates, violationRules: OrderingRules): Boolean =
-//    updates.indices.all { idx ->
-//        val page = updates[idx]
-//        val remainList = updates.drop(idx + 1)
-//        val pageViolations = violationRules[page] ?: emptySet()
-//        !remainList.any { it in pageViolations }
-//    }
+fun parseViolation(input: String): Pair<OrderingRules, List<Updates>> {
+    val (rulesString, updatesString) = input.split("\n\n")
+    val rules = parseViolationRules(rulesString)
+    val updates = parseUpdates(updatesString)
+    return rules to updates
+}
 
-//fun passes(updates: List<Int>, orderingRules: Map<Int, Set<Int>>): Boolean =
-//    updates.fold(emptySet<Int>()) { seen, page ->
-//        // Check if any required pages for `page` are already in `seen`
-//        val requiredPages = orderingRules[page] ?: emptySet()
-//        if (requiredPages.any { it in seen }) {
-//            return null // Signal failure
-//        } else {
-//            seen + page // Add current page to seen
-//        }
-//    } != null
-
-// 1 5 18 3 2
-// 5 9 3 2
-fun passes(updates: Updates, orderingRules: OrderingRules): Boolean =
-    // Start at the end and keep track of what pages are not allowed to appear.
+fun passesOrdering(updates: Updates, orderingRules: OrderingRules): Boolean =
+    // Start at the end and check to see if any pages appear that were not allowed to be
+    // seen closer to the end of the list.
     updates.fold(emptySet<Int>()) { seen, page ->
         val notSeenEarlier = orderingRules[page] ?: emptySet()
-        if (notSeenEarlier.any { it in seen }) {
-            return false
-        }
+        if (notSeenEarlier.any { it in seen }) { return false }
         seen + page
     }.let { true }
 
+fun passesViolation(updates: Updates, violationRules: OrderingRules): Boolean =
+    updates.fold(emptySet<Int>()) { disallowed, page ->
+        if (page in disallowed) return false
+        disallowed + (violationRules[page] ?: emptySet())
+    }.let { true }
+
+fun passesViolation2(updates: Updates, violationRules: OrderingRules): Boolean =
+    updates.indices.all { idx ->
+        val page = updates[idx]
+        val remainList = updates.drop(idx + 1)
+        val pageViolations = violationRules[page] ?: emptySet()
+        !remainList.any { it in pageViolations }
+    }
+
+
 fun answer1(orderingRules: OrderingRules, updatesList: List<Updates>): Int =
-    updatesList.filter { update -> passes(update, orderingRules) }
+    updatesList.filter { update -> passesOrdering(update, orderingRules) }
+        .sumOf { it[it.size / 2] }
+
+fun answer1b(violationRules: OrderingRules, updatesList: List<Updates>): Int =
+    updatesList.filter { update -> passesViolation(update, violationRules) }
         .sumOf { it[it.size / 2] }
 
 fun answer2(input: List<String>): Int =
@@ -99,11 +94,13 @@ fun answer2(input: List<String>): Int =
 
 fun main() {
     val input = readInput({}::class.day()).trim()
-    val (orderingRules, updateList) = parse(input)
+    val (orderingRules, updateList) = parseOrdering(input)
+    val (violationRules, updateList2) = parseViolation(input)
 
     println("--- Day 5: Print Queue ---")
 
     // Answer 1: 4281
+    println("Part 1: ${answer1(orderingRules, updateList)}")
     println("Part 1: ${answer1(orderingRules, updateList)}")
 
     // Answer 2: 83158140
