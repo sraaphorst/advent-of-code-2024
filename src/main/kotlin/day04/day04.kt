@@ -18,6 +18,17 @@ import common.readInput
 
 private const val XMAS = "XMAS"
 
+/**
+ * Transformations to use in a wordsearch grid to look:
+ * 1. Left-to-right
+ * 2. Right-to-left
+ * 3. Top-to-bottom
+ * 4. Bottom-to-top
+ * 5. Top-left to bottom-right
+ * 6. Top-right to bottom-left
+ * 7. Bottom-left to top-right
+ * 8. Bottom-right to top-left
+ */
 private val Transforms = listOf(
     List<String>::getEastStrings,
     List<String>::getWestStrings,
@@ -48,6 +59,7 @@ private fun countXmases(input: List<String>): Int =
  *  M.S
  *  .A.
  *  M.S
+ *  This could be tidied up but since we only have four cases, we leave it as is.
  */
 private fun countXXmases(input: List<String>): Int =
     input.map(String::toList)
