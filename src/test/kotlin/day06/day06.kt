@@ -28,9 +28,9 @@ class Day06Test {
     fun `Problem 1 example`() {
         assertEquals(41, answer1(guard))
     }
-//
-//    @Test
-//    fun `Problem 2 example`() {
-//        assertEquals(9, answer2(grid))
-//    }
+
+    @Test
+    fun `Problem 2 example`() {
+        assertEquals(6, answer2(guard))
+    }
 }

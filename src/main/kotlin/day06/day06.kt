@@ -25,6 +25,9 @@ enum class Direction(val delta: Point) {
     }
 }
 
+typealias Orientation = Pair<Direction, Point>
+typealias Orientations = Set<Orientation>
+
 private operator fun Point.plus(other: Point): Point =
     (first + other.first) to (second + other.second)
 
@@ -36,53 +39,72 @@ data class MapGrid(val rows: Int,
 
     fun outOfBounds(point: Point) =
         (point.first !in 0 until rows) || (point.second !in 0 until cols)
+
+    // The empty squares where a boundary can be added to the map.
+    // Note that we must manually remove the guard's starting location.
+    val boundaryCandidates: Set<Point> =
+        (0 until rows).flatMap { row ->
+            (0 until cols).map { col ->
+                Point(row, col)
+            }
+        }.filter { it !in boundaries }.toSet()
 }
 
-data class Guard(private var location: Point,
-                 private var direction: Direction,
+data class Guard(private val originalLocation: Point,
+                 private val originalDirection: Direction,
                  private val map: MapGrid) {
     // The locations that were visited.
-    private val visited = mutableSetOf<Point>(location)
+    private val visited = mutableSetOf<Point>(originalLocation)
 
     /**
-     * Move the guard and determine if the guard can continue to move.
+     * Continue to move the guard until:
+     * 1. The guard moves off the board.
+     * 2. A cycle is detected.
      */
-    fun move(): Boolean {
-        val newLocation = location + direction.delta
+    fun move(addedPoint: Point? = null): Int? {
+        tailrec fun aux(visitedPoints: Set<Point> = emptySet(),
+                        orientations: Orientations = emptySet(),
+                        currentDirection: Direction = originalDirection,
+                        currentLocation: Point = originalLocation): Int? {
+            // If we are off the map, then return the number of points.
+            if (map.outOfBounds(currentLocation))
+                return visitedPoints.size
 
-        // Did the guard move out of bounds?
-        if (map.outOfBounds(newLocation)) {
-            return false
-        }
+            // If the guard has moved at least once and has reached a previous
+            // orientation, then she is cycling.
+            val currentOrientation = currentDirection to currentLocation
 
-        // Did the guard hit a boundary, in which case, we rotate?
-        if (map.boundary(newLocation))
-            direction = direction.clockwise()
-        else {
-            location = newLocation
-            visited.add(location)
-        }
-        return true
-    }
+            // Attempt to move the guard.
+            // If we have already seen this orientation, then we are cycling.
+            // Return null to indicate this.
+            if (currentOrientation in orientations)
+                return null
 
-    fun spacesVisited(): Int =
-        visited.size
+            // Calculate where the guard would go if she kept traveling forward.
+            val newLocation = currentLocation + currentDirection.delta
 
-    fun debug() {
-        println("Map: rows=${map.rows}, cols=${map.cols}")
-        (0 until map.rows).forEach { row ->
-            (0 until map.cols).forEach { col ->
-                val point = Point(row, col)
-                if (map.boundary(point))
-                    print('#')
-                else if (point in visited)
-                    print('X')
-                else
-                    print('.')
+            // If the guard would hit a boundary, record the current orientation, rotate, and
+            // do not move to the new location.
+            if (map.boundary(newLocation) || (addedPoint != null && newLocation == addedPoint)) {
+                return aux(visitedPoints,
+                           orientations + currentOrientation,
+                           currentDirection.clockwise(),
+                           currentLocation)
             }
-            println()
+
+            // Move the guard forward, recording the location we just passed through.
+            return aux(visitedPoints + currentLocation,
+                       orientations + currentOrientation,
+                       currentDirection,
+                       newLocation)
+
         }
+
+        return aux()
     }
+
+    fun countObstructions(): Int =
+        map.boundaryCandidates.count { move(it) == null }
 }
 
 /**
@@ -114,14 +136,11 @@ fun parseProblem(input: String): Guard {
 }
 
 
-fun answer1(guard: Guard): Int {
-    tailrec fun aux(): Int =
-        if (!guard.move()) guard.spacesVisited()
-        else aux()
-    return aux()
-}
+fun answer1(guard: Guard): Int =
+    guard.move() ?: 0
 
-//fun answer2(input: String): Int = TODO()
+fun answer2(guard: Guard): Int =
+    guard.countObstructions()
 
 
 fun main() {
@@ -133,5 +152,5 @@ fun main() {
     println("Part 1: ${answer1(input)}")
 
     // Answer 2:
-//    println("Part 2: ${answer2(input)}")
+    println("Part 2: ${answer2(input)}")
 }
