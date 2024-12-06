@@ -1,6 +1,9 @@
 // Advent of Code 2024, Day 06.
 // By Sebastian Raaphorst, 2024.
 
+// NOTE: Trying to use pure FP in this question made part 2 run extremely slowly.
+// Mutable data structures are needed to avoid having to continuously copy structures.
+
 package day06
 
 import common.day
@@ -25,129 +28,94 @@ enum class Direction(val delta: Point) {
     }
 }
 
-typealias Orientation = Pair<Direction, Point>
-typealias Orientations = Set<Orientation>
-
 private operator fun Point.plus(other: Point): Point =
     (first + other.first) to (second + other.second)
+
+typealias Orientation = Pair<Direction, Point>
 
 data class MapGrid(val rows: Int,
                    val cols: Int,
                    val boundaries: Set<Point>) {
-    fun boundary(point: Point): Boolean =
+    fun isBoundary(point: Point): Boolean =
         point in boundaries
 
-    fun outOfBounds(point: Point) =
-        (point.first !in 0 until rows) || (point.second !in 0 until cols)
-
-    // The empty squares where a boundary can be added to the map.
-    // Note that we must manually remove the guard's starting location.
-    val boundaryCandidates: Set<Point> =
-        (0 until rows).flatMap { row ->
-            (0 until cols).map { col ->
-                Point(row, col)
-            }
-        }.filter { it !in boundaries }.toSet()
+    fun isOutOfBounds(point: Point): Boolean =
+        point.first !in 0 until rows || point.second !in 0 until cols
 }
 
-data class Guard(private val originalLocation: Point,
-                 private val originalDirection: Direction,
-                 private val map: MapGrid) {
+data class Guard(val startPosition: Point,
+                 val map: MapGrid) {
     /**
-     * Continue to move the guard until:
-     * 1. The guard moves off the board.
-     * 2. A cycle is detected.
+     * Simulate the guard's path and return either:
+     * 1. A set of visited points if it escapes.
+     * 2. Null if it enters a loop.
      */
     fun move(addedPoint: Point? = null): Set<Point>? {
-        tailrec fun aux(visitedPoints: Set<Point> = emptySet(),
-                        orientations: Orientations = emptySet(),
-                        currentDirection: Direction = originalDirection,
-                        currentLocation: Point = originalLocation): Set<Point>? {
-            // If we are off the map, then return the number of points.
-            if (map.outOfBounds(currentLocation))
-                return visitedPoints
+        val visitedPoints = mutableSetOf<Point>()
+        val visitedStates = mutableSetOf<Orientation>()
 
-            // If the guard has moved at least once and has reached a previous
-            // orientation, then she is cycling.
-            val currentOrientation = currentDirection to currentLocation
+        var currentPosition = startPosition
+        var currentDir = Direction.NORTH
 
-            // Attempt to move the guard.
-            // If we have already seen this orientation, then we are cycling.
-            // Return null to indicate this.
-            if (currentOrientation in orientations) {
-                return null
-            }
+        while (!map.isOutOfBounds(currentPosition)) {
+            visitedPoints.add(currentPosition)
 
-            // Calculate where the guard would go if she kept traveling forward.
-            val newLocation = currentLocation + currentDirection.delta
+            // If we return to a state we already visited, we have detected a cycle.
+            val state = currentDir to currentPosition
+            if (state in visitedStates) return null
+            visitedStates.add(state)
 
-            // If the guard would hit a boundary, record the current orientation, rotate, and
-            // do not move to the new location.
-            if (map.boundary(newLocation) || (addedPoint != null && newLocation == addedPoint)) {
-                return aux(visitedPoints,
-                           orientations + currentOrientation,
-                           currentDirection.clockwise(),
-                           currentLocation)
-            }
-
-            // Move the guard forward, recording the location we just passed through.
-            return aux(visitedPoints + currentLocation,
-                       orientations + currentOrientation,
-                       currentDirection,
-                       newLocation)
-
+            // Move forward or turn if hitting a boundary
+            val nextPosition = currentPosition + currentDir.delta
+            if (map.isBoundary(nextPosition) || (addedPoint != null && nextPosition == addedPoint))
+                currentDir = currentDir.clockwise()
+            else
+                currentPosition = nextPosition
         }
-
-        return aux()
+        return visitedPoints
     }
 }
 
 /**
- * Make a sparse representation of the items in the way of the guard by representing
- * the points where there are obstacles.
- * The first Point is the guard's starting location.
+ * Parse the input into a Guard and MapGrid.
  */
 fun parseProblem(input: String): Guard {
-    var location: Point? = null
+    var startPosition: Point? = null
     val barriers = mutableSetOf<Point>()
 
-    input.trim().lines()
-        .withIndex()
-        .map { (xIdx, row) ->
-            row.withIndex()
-                .forEach { (yIdx, symbol) ->
-                    when (symbol) {
-                        '^' -> location = Point(xIdx, yIdx)
-                        '#' -> barriers.add(Point(xIdx, yIdx))
-                    }
-                }
-        }
-    val mapRows = input.lines().size
-    val colRow = input.lines().first().trim().length
-    val map = MapGrid(mapRows, colRow, barriers)
-    return Guard(location ?: error("No guard starting position"),
-                 Direction.NORTH,
-                 map)
-}
+    input.trim().lines().forEachIndexed { x, row ->
+        row.forEachIndexed { y, ch -> when (ch) {
+            '^' -> startPosition = Point(x, y)
+            '#' -> barriers.add(Point(x, y))
+        } }
+    }
 
+    val rows = input.lines().size
+    val cols = input.lines().first().length
+    val map = MapGrid(rows, cols, barriers)
+    return Guard(startPosition ?: error("No start position found"), map)
+}
 
 fun answer1(guard: Guard): Int =
     guard.move()?.size ?: error("Could not calculate")
 
-// The only place we can put a single obstruction are on the guard's initial path:
-// Any other locations will not obstruct the guard.
-fun answer2(guard: Guard): Int =
-    (guard.move() ?: error("Could not calculate")).count { guard.move(it) == null }
+fun answer2(guard: Guard): Int {
+    val originalPath = guard.move() ?: error("Could not calculate")
 
+    // We want the number of nulls, i.e. the number of times the guard gets in a cycle.
+    return originalPath.count { candidatePoint ->
+        guard.move(candidatePoint) == null
+    }
+}
 
 fun main() {
     val input = parseProblem(readInput({}::class.day()).trim())
 
     println("--- Day 6: Guard Gallivant ---")
 
-    // Answer 1: 5208
+    // Part 1: 5208
     println("Part 1: ${answer1(input)}")
 
-    // Answer 2: 1972
+    // Part 2: 1972
     println("Part 2: ${answer2(input)}")
 }
