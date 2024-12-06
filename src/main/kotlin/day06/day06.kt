@@ -53,22 +53,19 @@ data class MapGrid(val rows: Int,
 data class Guard(private val originalLocation: Point,
                  private val originalDirection: Direction,
                  private val map: MapGrid) {
-    // The locations that were visited.
-    private val visited = mutableSetOf<Point>(originalLocation)
-
     /**
      * Continue to move the guard until:
      * 1. The guard moves off the board.
      * 2. A cycle is detected.
      */
-    fun move(addedPoint: Point? = null): Int? {
+    fun move(addedPoint: Point? = null): Set<Point>? {
         tailrec fun aux(visitedPoints: Set<Point> = emptySet(),
                         orientations: Orientations = emptySet(),
                         currentDirection: Direction = originalDirection,
-                        currentLocation: Point = originalLocation): Int? {
+                        currentLocation: Point = originalLocation): Set<Point>? {
             // If we are off the map, then return the number of points.
             if (map.outOfBounds(currentLocation))
-                return visitedPoints.size
+                return visitedPoints
 
             // If the guard has moved at least once and has reached a previous
             // orientation, then she is cycling.
@@ -77,8 +74,9 @@ data class Guard(private val originalLocation: Point,
             // Attempt to move the guard.
             // If we have already seen this orientation, then we are cycling.
             // Return null to indicate this.
-            if (currentOrientation in orientations)
+            if (currentOrientation in orientations) {
                 return null
+            }
 
             // Calculate where the guard would go if she kept traveling forward.
             val newLocation = currentLocation + currentDirection.delta
@@ -102,9 +100,6 @@ data class Guard(private val originalLocation: Point,
 
         return aux()
     }
-
-    fun countObstructions(): Int =
-        map.boundaryCandidates.count { move(it) == null }
 }
 
 /**
@@ -137,10 +132,12 @@ fun parseProblem(input: String): Guard {
 
 
 fun answer1(guard: Guard): Int =
-    guard.move() ?: 0
+    guard.move()?.size ?: error("Could not calculate")
 
+// The only place we can put a single obstruction are on the guard's initial path:
+// Any other locations will not obstruct the guard.
 fun answer2(guard: Guard): Int =
-    guard.countObstructions()
+    (guard.move() ?: error("Could not calculate")).count { guard.move(it) == null }
 
 
 fun main() {
@@ -151,6 +148,6 @@ fun main() {
     // Answer 1: 5208
     println("Part 1: ${answer1(input)}")
 
-    // Answer 2:
+    // Answer 2: 1972
     println("Part 2: ${answer2(input)}")
 }
