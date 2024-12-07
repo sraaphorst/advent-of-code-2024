@@ -46,12 +46,10 @@ class Day05Test {
     }
 
     @Test
-    fun `Problem 1 example`() {
+    fun `Problem 1 example`() =
         assertEquals(143, answer1(violationRules, updatesList))
-    }
 
     @Test
-    fun `Problem 2 example`() {
+    fun `Problem 2 example`() =
         assertEquals(123, answer2(violationRules, updatesList))
-    }
 }

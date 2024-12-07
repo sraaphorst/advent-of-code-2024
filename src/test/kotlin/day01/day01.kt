@@ -21,12 +21,10 @@ class Day01Test {
     }
 
     @Test
-    fun `Problem 1 example`() {
+    fun `Problem 1 example`() =
         assertEquals(11, answer1(lists.first, lists.second))
-    }
 
     @Test
-    fun `Problem 2 example`() {
+    fun `Problem 2 example`() =
         assertEquals(31, answer2(lists.first, lists.second))
-    }
 }

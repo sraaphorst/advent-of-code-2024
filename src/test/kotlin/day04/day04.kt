@@ -25,12 +25,10 @@ class Day04Test {
     }
 
     @Test
-    fun `Problem 1 example`() {
+    fun `Problem 1 example`() =
         assertEquals(18, answer1(grid))
-    }
 
     @Test
-    fun `Problem 2 example`() {
+    fun `Problem 2 example`() =
         assertEquals(9, answer2(grid))
-    }
 }

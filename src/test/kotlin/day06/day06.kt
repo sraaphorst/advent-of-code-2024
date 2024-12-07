@@ -25,12 +25,10 @@ class Day06Test {
     }
 
     @Test
-    fun `Problem 1 example`() {
+    fun `Problem 1 example`() =
         assertEquals(41, answer1(guard))
-    }
 
     @Test
-    fun `Problem 2 example`() {
+    fun `Problem 2 example`() =
         assertEquals(6, answer2(guard))
-    }
 }
