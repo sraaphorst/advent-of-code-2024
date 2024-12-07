@@ -1,24 +1,33 @@
 // Advent of Code 2024, Day 07.
 // By Sebastian Raaphorst, 2024.
 
-// NOTE: Trying to use pure FP in this question made part 2 run extremely slowly.
-// Mutable data structures are needed to avoid having to continuously copy structures.
-
 package day07
 
 import common.day
 import common.readInput
+import java.math.BigInteger
 
-data class Equation(val total: Long, val numbers: List<Long>) {
+data class Equation(val total: BigInteger, val numbers: List<BigInteger>) {
+    /**
+     * The numbers list is evaluated left-to-right, and entries can be joined with + or *,
+     * or if allowConcat is true, they can also be concatenated.
+     */
     private fun canBeMade(allowConcat: Boolean): Boolean {
-        fun aux(currTotal: Long = numbers.first(),
-            remainingNumbers: List<Long> = numbers.drop(1)): Boolean {
+        fun aux(currTotal: BigInteger = numbers.first(),
+            remainingNumbers: List<BigInteger> = numbers.drop(1)): Boolean {
+            // currTotal can only ever increase, so if we already passed total, there is no
+            // reason to continue.
+            if (currTotal > total) return false
+
+            // If we have used up all the numbers and have achieved total, success.
             if (remainingNumbers.isEmpty()) return currTotal == total
+
+            // Calculate all of the possible extensions.
             val nextNumber = remainingNumbers.first()
             val nextRemainingNumbers = remainingNumbers.drop(1)
             return aux(currTotal + nextNumber, nextRemainingNumbers) ||
                     aux(currTotal * nextNumber, nextRemainingNumbers) ||
-                    (allowConcat && return aux("$currTotal$nextNumber".toLong(), remainingNumbers))
+                    (allowConcat && aux("$currTotal$nextNumber".toBigInteger(), nextRemainingNumbers))
         }
         return aux()
     }
@@ -31,16 +40,12 @@ data class Equation(val total: Long, val numbers: List<Long>) {
 
     companion object {
         fun parseLine(input: String): Equation {
-            println("Parsing $input")
-            val total = input.takeWhile(Char::isDigit).toLong()
-            val numbers = input.dropWhile { it != ':' }
-                .drop(1)
+            val (total, remaining) = input.split(":")
+            val numbers = remaining
                 .trim()
                 .split(Regex("""\s+"""))
-                .also(::println)
-                .filter(String::isNotBlank)
-                .map(String::toLong)
-            return Equation(total, numbers)
+                .map(String::toBigInteger)
+            return Equation(total.toBigInteger(), numbers)
         }
     }
 }
@@ -48,10 +53,10 @@ data class Equation(val total: Long, val numbers: List<Long>) {
 fun parse(input: String): List<Equation> =
     input.trim().lines().map(Equation::parseLine)
 
-fun answer1(equations: List<Equation>): Long =
+fun answer1(equations: List<Equation>): BigInteger =
     equations.filter(Equation::canBeMadeWithPlusTimes).sumOf(Equation::total)
 
-fun answer2(equations: List<Equation>): Long =
+fun answer2(equations: List<Equation>): BigInteger =
     equations.filter(Equation::canBeMadeWithPlusTimesConcat).sumOf(Equation::total)
 
 
@@ -59,11 +64,11 @@ fun main() {
     val input = readInput({}::class.day()).trim()
     val equations = parse(input)
 
-    println("--- Day 7:  ---")
+    println("--- Day 7: Bridge Repair ---")
 
     // Part 1: 2437272016585
     println("Part 1: ${answer1(equations)}")
 
-    // Part 2:
-//    println("Part 2: ${answer2(input)}")
+    // Part 2: 162987117690649
+    println("Part 2: ${answer2(equations)}")
 }

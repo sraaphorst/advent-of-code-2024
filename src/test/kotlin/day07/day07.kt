@@ -4,6 +4,7 @@
 package day07
 
 import org.junit.jupiter.api.Test
+import java.math.BigInteger
 import kotlin.test.assertEquals
 
 class Day06Test {
@@ -26,9 +27,9 @@ class Day06Test {
 
     @Test
     fun `Problem 1 example`() =
-        assertEquals(3749L, answer1(equations))
+        assertEquals(BigInteger("3749"), answer1(equations))
 
-//    @Test
-//    fun `Problem 2 example`() =
-//        assertEquals(11387, answer2(equations))
+    @Test
+    fun `Problem 2 example`() =
+        assertEquals(BigInteger("11387"), answer2(equations))
 }
