@@ -22,7 +22,7 @@ class Day06Test {
             292: 11 6 16 20
             """.trimIndent().trim()
 
-        val equations = input.lines().map(Equation::parseLine)
+        val equations = parse(input)
     }
 
     @Test
