@@ -3,9 +3,9 @@
 
 package day02
 
-import common.allListDrops
+import common.collectionops.allListDrops
 import common.day
-import common.parseGrid
+import common.parsing.parseGrid
 import common.readInput
 
 private const val Lower = 1
@@ -22,22 +22,21 @@ private fun isReportAlmostSafe(report: List<Int>): Boolean =
         .any(::isReportSafe)
 
 
-fun answer1(reports: List<List<Int>>): Int =
-    reports.count(::isReportSafe)
+fun answer1(input: String): Int =
+    parseGrid(input, String::toInt).count(::isReportSafe)
 
 
-fun answer2(reports: List<List<Int>>): Int =
-    reports.count(::isReportAlmostSafe)
+fun answer2(input: String): Int =
+    parseGrid(input, String::toInt).count(::isReportAlmostSafe)
 
 fun main() {
     val input = readInput({}::class.day())
-    val reports = parseGrid(input, String::toInt)
 
     println("--- Day 2: Red-Nosed Reports ---")
 
     // Answer 1: 379
-    println("Part 1: ${answer1(reports)}")
+    println("Part 1: ${answer1(input)}")
 
     // Answer 2: 430
-    println("Part 2: ${answer2(reports)}")
+    println("Part 2: ${answer2(input)}")
 }

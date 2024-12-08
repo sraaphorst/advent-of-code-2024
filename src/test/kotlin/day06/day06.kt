@@ -21,14 +21,13 @@ class Day06Test {
             #.........
             ......#...
             """.trimIndent().trim()
-        val guard = parseProblem(input)
     }
 
     @Test
     fun `Problem 1 example`() =
-        assertEquals(41, answer1(guard))
+        assertEquals(41, answer1(input))
 
     @Test
     fun `Problem 2 example`() =
-        assertEquals(6, answer2(guard))
+        assertEquals(6, answer2(input))
 }

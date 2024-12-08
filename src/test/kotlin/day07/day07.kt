@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 import java.math.BigInteger
 import kotlin.test.assertEquals
 
-class Day06Test {
+class Day07Test {
     private companion object {
         private val input =
             """
@@ -21,15 +21,13 @@ class Day06Test {
             21037: 9 7 18 13
             292: 11 6 16 20
             """.trimIndent().trim()
-
-        val equations = parse(input)
     }
 
     @Test
     fun `Problem 1 example`() =
-        assertEquals(BigInteger("3749"), answer1(equations))
+        assertEquals(BigInteger("3749"), answer1(input))
 
     @Test
     fun `Problem 2 example`() =
-        assertEquals(BigInteger("11387"), answer2(equations))
+        assertEquals(BigInteger("11387"), answer2(input))
 }

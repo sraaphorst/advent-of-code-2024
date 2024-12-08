@@ -1,9 +1,9 @@
 // Advent of Code
 // By Sebastian Raaphorst, 2024.
 
-package common
+package common.parsing
 
-private val WhitespaceParser = Regex("""\s+""")
+val WhitespaceParser = Regex("""\s+""")
 
 /**
  * Parse two columns into two lists.

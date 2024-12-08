@@ -4,31 +4,34 @@
 package day01
 
 import common.day
-import common.parseColumns
+import common.parsing.parseColumns
 import common.readInput
-import common.toFrequencyMap
+import common.collectionops.toFrequencyMap
 import kotlin.math.abs
 
-fun answer1(list1: List<Int>, list2: List<Int>): Int =
-    list1.sorted().zip(list2.sorted())
-        .sumOf { (first, second) -> abs(first - second) }
+fun answer1(input: String): Int =
+    parseColumns(input, String::toInt, String::toInt)
+        .let { (list1, list2) ->
+            list1.sorted().zip(list2.sorted())
+                .sumOf { (first, second) -> abs(first - second) }
+        }
 
-
-fun answer2(list1: List<Int>, list2: List<Int>): Int {
-    val freqMap1 = list1.toFrequencyMap()
-    val freqMap2 = list2.toFrequencyMap()
-    return freqMap1.map { (elem, freq) -> elem * freq * freqMap2.getOrDefault(elem, 0) }.sum()
-}
+fun answer2(input: String): Int =
+    parseColumns(input, String::toInt, String::toInt)
+        .let { (list1, list2) ->
+            val freqMap1 = list1.toFrequencyMap()
+            val freqMap2 = list2.toFrequencyMap()
+            freqMap1.map { (elem, freq) -> elem * freq * freqMap2.getOrDefault(elem, 0) }.sum()
+        }
 
 fun main() {
     val input = readInput({}::class.day())
-    val (list1, list2) = parseColumns(input, String::toInt, String::toInt)
 
     println("--- Day 1: Historian Hysteria ---")
 
     // Answer 1: 2031679
-    println("Part 1: ${answer1(list1, list2)}")
+    println("Part 1: ${answer1(input)}")
 
     // Answer 2: 19678534
-    println("Part 2: ${answer2(list1, list2)}")
+    println("Part 2: ${answer2(input)}")
 }

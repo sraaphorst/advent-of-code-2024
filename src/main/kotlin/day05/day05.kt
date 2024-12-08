@@ -4,20 +4,16 @@
 package day05
 
 import common.day
-import common.middle
+import common.collectionops.middle
 import common.readInput
 
-typealias OrderingRules = Map<Int, Set<Int>>
-typealias Updates = List<Int>
+private typealias OrderingRules = Map<Int, Set<Int>>
+private typealias Updates = List<Int>
 
 /**
- * We parse the input failure rules into two distinct structures.
- * The entries are of the form a|b, where if b occurs before a in a list of updates,
- * the process should fail.
- *
- * Thus, this is parsed into a Map<Int, Set<Int>> where all the b from above comprise keys,
- * and any entry a1|b, a2|b, etc. form the set of values {a1, a2, ...} indicate that if an
- * ai occurs after b, the updates fail.
+ * Parse the violation rules into a map where:
+ * - Keys are the integers `b` that must not precede certain `a` values.
+ * - Values are sets of `a` values that cause a violation if they follow the key.
  */
 private fun parseViolationRules(input: String): OrderingRules =
     input.lines()
@@ -26,69 +22,87 @@ private fun parseViolationRules(input: String): OrderingRules =
             val (a, b) = line.trim().split('|').map(String::toInt)
             b to a
         }
-        .groupBy(Pair<Int, Int>::first, Pair<Int, Int>::second)
-        .mapValues { (_, b) -> b.toSet() }
-
-
-private fun parseUpdates(input: String): List<Updates> =
-    input.lines()
-        .map { line -> line.trim().split(',').map(String::toInt) }
-
-fun parseViolation(input: String): Pair<OrderingRules, List<Updates>> {
-    val (rulesString, updatesString) = input.split("\n\n")
-    val rules = parseViolationRules(rulesString)
-    val updates = parseUpdates(updatesString)
-    return rules to updates
-}
-
-fun passesViolation(updates: Updates, violationRules: OrderingRules): Boolean =
-    updates.fold(emptySet<Int>()) { disallowed, page ->
-        if (page in disallowed) return false
-        disallowed + (violationRules[page] ?: emptySet())
-    }.let { true }
+        .groupBy({ it.first }, { it.second })
+        .mapValues { (_, values) -> values.toSet() }
 
 /**
- * Idea:
- * Gather all elements.
- * While there are still elements in the remaining element set:
- * Keep picking the element that doesn't appear in any other violation for remaining elements
- *   and add it to the ordering.
- * Remove it from the remaining element set.
+ * Parse updates as lists of integers from input lines.
  */
-fun reorder(updates: Updates, violationRules: OrderingRules): List<Int> {
+private fun parseUpdates(input: String): List<Updates> =
+    input.lines().map { line ->
+        line.trim().split(',').map(String::toInt)
+    }
+
+/**
+ * Parse the violation rules and updates from the input string.
+ * The input is split into two sections separated by a blank line.
+ */
+private fun parseViolation(input: String): Pair<OrderingRules, List<Updates>> {
+    val (rulesString, updatesString) = input.split("\n\n")
+    return parseViolationRules(rulesString) to parseUpdates(updatesString)
+}
+
+/**
+ * Check if a given sequence of updates passes the violation rules.
+ * Returns `true` if no violations occur, otherwise `false`.
+ */
+private fun passesViolation(updates: Updates, violationRules: OrderingRules): Boolean {
+    val disallowed = mutableSetOf<Int>()
+    for (page in updates) {
+        if (page in disallowed) return false
+        disallowed += violationRules[page] ?: emptySet()
+    }
+    return true
+}
+
+/**
+ * Reorder the updates to satisfy violation rules.
+ * Uses a recursive approach to build the ordering.
+ */
+private fun reorder(updates: Updates, violationRules: OrderingRules): Updates {
     tailrec fun aux(
-        reorder: List<Int> = emptyList(),
+        reordered: Updates = emptyList(),
         remaining: Set<Int> = updates.toSet()
     ): Updates {
-        if (remaining.isEmpty()) return reorder
-        val disallowed = remaining.flatMap { violationRules[it] ?: emptySet() }
+        if (remaining.isEmpty()) return reordered
+        val disallowed = remaining.flatMap { violationRules[it] ?: emptySet() }.toSet()
         val candidates = remaining - disallowed
-        if (candidates.isEmpty()) throw RuntimeException("No candidate for reordering.")
-        val candidate = candidates.first()
-        return aux(reorder + candidate, remaining - candidate)
+        val candidate = candidates.firstOrNull()
+            ?: throw RuntimeException("No candidate for reordering.")
+        return aux(reordered + candidate, remaining - candidate)
     }
     return aux()
 }
 
-fun answer1(violationRules: OrderingRules, updatesList: List<Updates>): Int =
-    updatesList.filter { update -> passesViolation(update, violationRules) }
-        .sumOf(List<Int>::middle)
+/**
+ * Part 1: Sum the "middle" values of updates that pass the violation rules.
+ */
+fun answer1(input: String): Int =
+    parseViolation(input).let { (violationRules, updatesList) ->
+        updatesList
+            .filter { passesViolation(it, violationRules) }
+            .sumOf(List<Int>::middle)
+    }
 
-fun answer2(violationRules: OrderingRules, updatesList: List<Updates>): Int =
-    updatesList.filterNot { passesViolation(it, violationRules) }
-        .map { reorder(it, violationRules) }
-        .sumOf(List<Int>::middle)
-
+/**
+ * Part 2: Sum the "middle" values of reordered updates that fail the violation rules.
+ */
+fun answer2(input: String): Int =
+    parseViolation(input).let { (violationRules, updatesList) ->
+        updatesList
+            .filterNot { passesViolation(it, violationRules) }
+            .map { reorder(it, violationRules) }
+            .sumOf(List<Int>::middle)
+    }
 
 fun main() {
     val input = readInput({}::class.day()).trim()
-    val (violationRules, updateList) = parseViolation(input)
 
     println("--- Day 5: Print Queue ---")
 
-    // Answer 1: 4281
-    println("Part 1: ${answer1(violationRules, updateList)}")
+    // Part 1: 4281
+    println("Part 1: ${answer1(input)}")
 
-    // Answer 2: 5466
-    println("Part 2: ${answer2(violationRules, updateList)}")
+    // Part 2: 5466
+    println("Part 2: ${answer2(input)}")
 }

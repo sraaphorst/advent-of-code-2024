@@ -1,7 +1,7 @@
 // Advent of Code
 // By Sebastian Raaphorst, 2024.
 
-package common
+package common.collectionops
 
 /**
  * Given a Collection, convert it into a map with the frequencies of each element.
