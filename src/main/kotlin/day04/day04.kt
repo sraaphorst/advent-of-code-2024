@@ -3,10 +3,9 @@
 
 package day04
 
+import common.aocreader.fetchAdventOfCodeInput
 import common.countSubstrings
-import common.day
 import common.collectionops.*
-import common.readInput
 
 private const val XMAS = "XMAS"
 
@@ -60,7 +59,7 @@ fun answer2(input: String): Int =
     countXXmases(input.lines())
 
 fun main() {
-    val input = readInput({}::class.day())
+    val input = fetchAdventOfCodeInput(2024, 4)
 
     println("--- Day 4: Ceres Search ---")
 

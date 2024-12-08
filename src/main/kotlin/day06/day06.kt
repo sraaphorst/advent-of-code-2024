@@ -6,9 +6,8 @@
 
 package day06
 
+import common.aocreader.fetchAdventOfCodeInput
 import common.intpos2d.*
-import common.day
-import common.readInput
 
 /**
  * The direction that the guard is facing and moves in.
@@ -101,7 +100,7 @@ fun answer2(input: String): Int =
     }
 
 fun main() {
-    val input = readInput({}::class.day()).trim()
+    val input = fetchAdventOfCodeInput(2024, 6)
 
     println("--- Day 6: Guard Gallivant ---")
 

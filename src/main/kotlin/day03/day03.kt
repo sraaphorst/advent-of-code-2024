@@ -3,8 +3,7 @@
 
 package day03
 
-import common.day
-import common.readInput
+import common.aocreader.fetchAdventOfCodeInput
 
 /**
  * We want to turn off processing for substrings of the form:
@@ -31,7 +30,7 @@ fun answer2(input: String): Int =
     answer1(preprocess(input))
 
 fun main() {
-    val input = readInput({}::class.day())
+    val input = fetchAdventOfCodeInput(2024, 3)
 
     println("--- Day 3: Mull It Over ---")
 
