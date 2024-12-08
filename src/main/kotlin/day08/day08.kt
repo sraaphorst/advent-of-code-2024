@@ -26,12 +26,15 @@ data class Grid(val height: Int, val width: Int, val antennae: AntennaMap) {
      * 2. pos2 - delta
      * and if they are in the grid, then they contribute.
      */
-    private fun calculateAntinodePair(pos1: Position, pos2: Position): List<Position> {
+    private fun calculateAntinodePair(pos1: Position, pos2: Position): Set<Position> {
         val delta = pos1 - pos2
         return listOf(pos1 + delta, pos2 - delta)
-            .filter { (row, col) -> row in (0 until height) && col in (0 until width) }
-            .also { it.forEach { t -> println("For $pos1 + $pos2 -> $t") }}
+            .filter(::inGrid)
+            .toSet()
     }
+
+    private fun inGrid(pos: Position): Boolean =
+        pos.first in (0 until height) && pos.second in (0 until width)
 
     /**
      * Calculate the slope of the line that the antinodes are on, namely
@@ -40,18 +43,22 @@ data class Grid(val height: Int, val width: Int, val antennae: AntennaMap) {
      */
     private fun calculateAllAntinodes(pos1: Position, pos2: Position): Set<Position> {
         val delta = pos1 - pos2
-        tailrec fun aux(newAntinodes: Set<Position> = setOf(pos1, pos2),
-                        antinodes: Set<Position> = emptySet()): Set<Position> = when {
-                            newAntinodes.isEmpty() -> antinodes
-                            else -> {
-                                val possibleNewAntinodes = newAntinodes.flatMap { listOf(it + delta, it - delta) }
-                                    .toSet()
-                                    .filter { (row, col) -> row in (0 until height) && col in (0 until width) }
-                                    .toSet()
-                                aux(possibleNewAntinodes, antinodes + newAntinodes)
-                            }
-                        }
-        return aux()
+        val antinodes = mutableSetOf<Position>()
+        val currAntinodes = mutableSetOf<Position>(pos1, pos2)
+        while (currAntinodes.isNotEmpty()) {
+            antinodes += currAntinodes
+            val nextAntinodes = mutableSetOf<Position>()
+
+            for (antinode in currAntinodes) {
+                val candidate1 = antinode - delta
+                if (inGrid(candidate1) && candidate1 !in antinodes) nextAntinodes.add(candidate1)
+                val candidate2 = antinode + delta
+                if (inGrid(candidate2) && candidate2 !in antinodes) nextAntinodes.add(candidate2)
+            }
+            currAntinodes.clear()
+            currAntinodes += nextAntinodes
+        }
+        return antinodes
     }
 
     /**
@@ -117,6 +124,6 @@ fun main() {
     // Part 1: 376
     println("Part 1: ${answer1(input)}")
 
-    // Part 2:
-//    println("Part 2: ${answer2(input)}")
+    // Part 2: 1352
+    println("Part 2: ${answer2(input)}")
 }
