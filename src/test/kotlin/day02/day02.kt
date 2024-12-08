@@ -3,13 +3,12 @@
 
 package day02
 
-import common.parseGrid
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class Day02Test {
     private companion object {
-        val reports = parseGrid(
+        val input =
             """
             7 6 4 2 1
             1 2 7 8 9
@@ -17,14 +16,14 @@ class Day02Test {
             1 3 2 4 5
             8 6 4 4 1
             1 3 6 7 9
-            """.trimIndent(), String::toInt)
+            """.trimIndent()
     }
 
     @Test
     fun `Problem 1 example`() =
-        assertEquals(2, answer1(reports))
+        assertEquals(2, answer1(input))
 
     @Test
     fun `Problem 2 example`() =
-        assertEquals(4, answer2(reports))
+        assertEquals(4, answer2(input))
 }

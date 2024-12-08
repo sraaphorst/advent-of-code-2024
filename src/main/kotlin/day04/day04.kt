@@ -5,30 +5,11 @@ package day04
 
 import common.countSubstrings
 import common.day
-import common.extractBlocks
-import common.getEastStrings
-import common.getNEStrings
-import common.getNWStrings
-import common.getNorthStrings
-import common.getSEStrings
-import common.getSWStrings
-import common.getSouthStrings
-import common.getWestStrings
+import common.collectionops.*
 import common.readInput
 
 private const val XMAS = "XMAS"
 
-/**
- * Transformations to use in a wordsearch grid to look:
- * 1. Left-to-right
- * 2. Right-to-left
- * 3. Top-to-bottom
- * 4. Bottom-to-top
- * 5. Top-left to bottom-right
- * 6. Top-right to bottom-left
- * 7. Bottom-left to top-right
- * 8. Bottom-right to top-left
- */
 private val Transforms = listOf(
     List<String>::getEastStrings,
     List<String>::getWestStrings,
@@ -72,14 +53,14 @@ private fun countXXmases(input: List<String>): Int =
 
         }
 
-fun answer1(input: List<String>): Int =
-    countXmases(input)
+fun answer1(input: String): Int =
+    countXmases(input.lines())
 
-fun answer2(input: List<String>): Int =
-    countXXmases(input)
+fun answer2(input: String): Int =
+    countXXmases(input.lines())
 
 fun main() {
-    val input = readInput({}::class.day()).trim().lines()
+    val input = readInput({}::class.day())
 
     println("--- Day 4: Ceres Search ---")
 

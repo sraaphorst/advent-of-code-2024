@@ -3,13 +3,12 @@
 
 package day01
 
-import common.parseColumns
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class Day01Test {
     private companion object {
-        val lists = parseColumns(
+        val input =
             """
             3   4
             4   3
@@ -17,14 +16,14 @@ class Day01Test {
             1   3
             3   9
             3   3
-            """.trimIndent(), String::toInt, String::toInt)
+            """.trimIndent()
     }
 
     @Test
     fun `Problem 1 example`() =
-        assertEquals(11, answer1(lists.first, lists.second))
+        assertEquals(11, answer1(input))
 
     @Test
     fun `Problem 2 example`() =
-        assertEquals(31, answer2(lists.first, lists.second))
+        assertEquals(31, answer2(input))
 }

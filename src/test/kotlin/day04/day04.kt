@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 
 class Day04Test {
     private companion object {
-        val grid =
+        val input =
             """
             MMMSXXMASM
             MSAMXMSMSA
@@ -20,15 +20,15 @@ class Day04Test {
             SAXAMASAAA
             MAMMMXMMMM
             MXMXAXMASX
-            """.trimIndent().trim().lines()
+            """.trimIndent()
 
     }
 
     @Test
     fun `Problem 1 example`() =
-        assertEquals(18, answer1(grid))
+        assertEquals(18, answer1(input))
 
     @Test
     fun `Problem 2 example`() =
-        assertEquals(9, answer2(grid))
+        assertEquals(9, answer2(input))
 }
