@@ -5,8 +5,8 @@ build/
 !**/src/test/**/build/
 
 ### Advent of Code Input ###
-src/main/resources
 src/main/resources/cookie
+src/main/resources/day*.txt
 
 ### IntelliJ IDEA ###
 .idea
