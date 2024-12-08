@@ -17,15 +17,16 @@ data class Equation(val total: BigInteger, val numbers: List<BigInteger>) {
     private fun canBeMade(allowConcat: Boolean): Boolean {
         // Memoization here does not significantly improve time.
         fun aux(currTotal: BigInteger = numbers.first(),
-                remainingNumbers: List<BigInteger> = numbers.drop(1)): Boolean {
-            if (currTotal > total) return false
-            if (remainingNumbers.isEmpty()) return currTotal == total
-
-            val nextNumber = remainingNumbers.first()
-            val nextRemainingNumbers = remainingNumbers.drop(1)
-            return aux(currTotal + nextNumber, nextRemainingNumbers) ||
-                    aux(currTotal * nextNumber, nextRemainingNumbers) ||
-                    (allowConcat && aux("$currTotal$nextNumber".toBigInteger(), nextRemainingNumbers))
+                remainingNumbers: List<BigInteger> = numbers.drop(1)): Boolean = when {
+            currTotal > total -> false
+            remainingNumbers.isEmpty() -> currTotal == total
+            else -> {
+                val nextNumber = remainingNumbers.first()
+                val nextRemainingNumbers = remainingNumbers.drop(1)
+                aux(currTotal + nextNumber, nextRemainingNumbers) ||
+                        aux(currTotal * nextNumber, nextRemainingNumbers) ||
+                        (allowConcat && aux("$currTotal$nextNumber".toBigInteger(), nextRemainingNumbers))
+            }
         }
         return aux()
     }
