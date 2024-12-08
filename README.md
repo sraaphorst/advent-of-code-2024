@@ -2,6 +2,9 @@
 
 My attempt in Kotlin to complete the [2024 Advent of Code](https://adventofcode.com/2024).
 
-**Current status:** Day 5 complete.
+To retrieve input data, you must obtain your session cookie from
+the Advent of Code website and add it to the [resources](src/main/resources) directory.
 
-**Last updated:** 2024-12-05.
+**Current status:** Day 8 complete.
+
+**Last updated:** 2024-12-08.

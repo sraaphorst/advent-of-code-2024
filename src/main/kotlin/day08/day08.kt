@@ -3,6 +3,7 @@
 
 package day08
 
+import common.aocreader.fetchAdventOfCodeInput
 import common.day
 import common.intpos2d.*
 import common.readInput
@@ -83,7 +84,7 @@ fun answer2(input: String): Int =
 
 
 fun main() {
-    val input = readInput({}::class.day()).trim()
+    val input = fetchAdventOfCodeInput(2024, 8)
 
     println("--- Day 8: Resonant Collinearity ---")
 

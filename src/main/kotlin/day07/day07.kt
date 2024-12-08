@@ -3,6 +3,7 @@
 
 package day07
 
+import common.aocreader.fetchAdventOfCodeInput
 import common.day
 import common.parsing.WhitespaceParser
 import common.readInput
@@ -58,7 +59,7 @@ fun answer2(input: String): BigInteger =
 
 
 fun main() {
-    val input = readInput({}::class.day()).trim()
+    val input = fetchAdventOfCodeInput(2024, 7)
 
     println("--- Day 7: Bridge Repair ---")
 

@@ -3,10 +3,9 @@
 
 package day02
 
+import common.aocreader.fetchAdventOfCodeInput
 import common.collectionops.allListDrops
-import common.day
 import common.parsing.parseGrid
-import common.readInput
 
 private const val Lower = 1
 private const val Upper = 3
@@ -30,7 +29,7 @@ fun answer2(input: String): Int =
     parseGrid(input, String::toInt).count(::isReportAlmostSafe)
 
 fun main() {
-    val input = readInput({}::class.day())
+    val input = fetchAdventOfCodeInput(2024, 2)
 
     println("--- Day 2: Red-Nosed Reports ---")
 

@@ -3,9 +3,8 @@
 
 package day01
 
-import common.day
+import common.aocreader.fetchAdventOfCodeInput
 import common.parsing.parseColumns
-import common.readInput
 import common.collectionops.toFrequencyMap
 import kotlin.math.abs
 
@@ -25,7 +24,7 @@ fun answer2(input: String): Int =
         }
 
 fun main() {
-    val input = readInput({}::class.day())
+    val input = fetchAdventOfCodeInput(2024, 1)
 
     println("--- Day 1: Historian Hysteria ---")
 
