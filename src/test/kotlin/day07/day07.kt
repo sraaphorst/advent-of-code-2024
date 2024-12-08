@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 import java.math.BigInteger
 import kotlin.test.assertEquals
 
-class Day06Test {
+class Day07Test {
     private companion object {
         private val input =
             """
