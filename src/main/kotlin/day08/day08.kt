@@ -7,10 +7,10 @@ import common.day
 import common.intpos2d.*
 import common.readInput
 
-typealias Frequency = Char
-typealias AntennaMap = Map<Frequency, Set<IntPos2D>>
+private typealias Frequency = Char
+private typealias AntennaMap = Map<Frequency, Set<IntPos2D>>
 
-data class Grid(val height: Int, val width: Int, val antennae: AntennaMap) {
+private data class Grid(val height: Int, val width: Int, val antennae: AntennaMap) {
 
     private fun inBounds(pos: IntPos2D): Boolean =
         pos.first in 0 until height && pos.second in 0 until width

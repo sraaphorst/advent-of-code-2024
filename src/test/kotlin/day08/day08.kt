@@ -4,7 +4,6 @@
 package day08
 
 import org.junit.jupiter.api.Test
-import java.math.BigInteger
 import kotlin.test.assertEquals
 
 class Day08Test {

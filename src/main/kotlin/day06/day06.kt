@@ -13,7 +13,7 @@ import common.readInput
 /**
  * The direction that the guard is facing and moves in.
  */
-enum class Direction(val delta: IntPos2D) {
+private enum class Direction(val delta: IntPos2D) {
     NORTH(IntPos2D(-1, 0)),
     SOUTH(IntPos2D(1, 0)),
     EAST(IntPos2D(0, 1)),
@@ -27,11 +27,11 @@ enum class Direction(val delta: IntPos2D) {
     }
 }
 
-typealias Orientation = Pair<Direction, IntPos2D>
+private typealias Orientation = Pair<Direction, IntPos2D>
 
-data class MapGrid(val rows: Int,
-                   val cols: Int,
-                   val boundaries: Set<IntPos2D>) {
+private data class MapGrid(val rows: Int,
+                           val cols: Int,
+                           val boundaries: Set<IntPos2D>) {
     fun isBoundary(point: IntPos2D): Boolean =
         point in boundaries
 
@@ -39,8 +39,8 @@ data class MapGrid(val rows: Int,
         point.first in 0 until rows && point.second in 0 until cols
 }
 
-data class Guard(val startPosition: IntPos2D,
-                 val map: MapGrid) {
+private data class Guard(val startPosition: IntPos2D,
+                         val map: MapGrid) {
     /**
      * Simulate the guard's path and return either:
      * 1. A set of visited points if it escapes.
@@ -75,7 +75,7 @@ data class Guard(val startPosition: IntPos2D,
 /**
  * Parse the input into a Guard and MapGrid.
  */
-fun parse(input: String): Guard {
+private fun parse(input: String): Guard {
     var startPosition: IntPos2D? = null
     val barriers = mutableSetOf<IntPos2D>()
 

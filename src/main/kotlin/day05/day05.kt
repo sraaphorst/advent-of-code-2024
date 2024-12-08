@@ -7,8 +7,8 @@ import common.day
 import common.collectionops.middle
 import common.readInput
 
-typealias OrderingRules = Map<Int, Set<Int>>
-typealias Updates = List<Int>
+private typealias OrderingRules = Map<Int, Set<Int>>
+private typealias Updates = List<Int>
 
 /**
  * Parse the violation rules into a map where:
