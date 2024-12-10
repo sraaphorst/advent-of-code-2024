@@ -1,20 +1,22 @@
 // Advent of Code 2024, Day 09.
 // By Sebastian Raaphorst, 2024.
 
+// This code was a misery to write and could stand for a lot of improvement.
+
 package day09
 
 import common.aocreader.fetchAdventOfCodeInput
 import java.math.BigInteger
 
-typealias Range = LongRange
-typealias RangeList = MutableList<Range>
+private typealias Range = LongRange
+private typealias RangeList = MutableList<Range>
 
 private fun Range.size(): Long =
     last - first + 1
 
-data class File(val id: Int, var blocks: RangeList)
+private data class File(val id: Int, var blocks: RangeList)
 
-class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
+private class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
     init {
         sortGaps()
         sortFiles()
@@ -36,7 +38,7 @@ class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
     }
 
     /**
-     * Reparse before using this.
+     * Reparse before using this: solves part 1.
      */
     fun rearrange1() {
         // We want to get the highest block and move it to the earliest position if
@@ -79,7 +81,7 @@ class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
                     gaps += lastBlock
                 }
 
-                gapSize < blockSize -> {
+                else -> {
                     // If the block is bigger than the gap, we divide the block in two
                     // and move the last part to the gap.
                     val dividingPoint = lastBlock.last - gapSize + 1
@@ -92,22 +94,23 @@ class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
 
                     gaps -= firstGap
 
-                    // Do we need this?
+                    // We shouldn't need this.
                     gaps += subBlock2
                 }
             }
 
             // Re-sort.
             sortFile(lastFile)
-            mergeRanges(lastFile.blocks).let { lastFile.blocks = it }
+            sortAndMergeRanges(lastFile.blocks).let { lastFile.blocks = it }
             sortFiles()
-            sortGaps()
-            gaps = mergeRanges(gaps)
+
+            // Sort and merge the gaps.
+            gaps = sortAndMergeRanges(gaps)
         }
     }
 
     /**
-     * Reparse before using this.
+     * Reparse before using this: solves part 2.
      */
     fun rearrange2() {
         for (file in files.reversed()) {
@@ -137,13 +140,12 @@ class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
                 }
             }
 
-            // Sort the gaps.
-            sortGaps()
-            gaps = mergeRanges(gaps)
+            // Sort and merge the gaps.
+            gaps = sortAndMergeRanges(gaps)
         }
     }
 
-    fun mergeRanges(ranges: MutableList<Range>): MutableList<Range> {
+    fun sortAndMergeRanges(ranges: MutableList<Range>): MutableList<Range> {
         if (ranges.isEmpty()) return mutableListOf()
 
         // Sort the ranges by their start values
@@ -154,10 +156,10 @@ class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
 
         for (range in sortedRanges.drop(1)) {
             if (range.first <= currentRange.last + 1) {
-                // Merge ranges if they overlap or are contiguous
+                // Merge ranges if they overlap or are contiguous.
                 currentRange = currentRange.first..maxOf(currentRange.last, range.last)
             } else {
-                // Add the non-overlapping range to the result
+                // Add the non-overlapping range to the result.
                 merged.add(currentRange)
                 currentRange = range
             }
@@ -165,7 +167,6 @@ class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
 
         // Add the final range
         merged.add(currentRange)
-
         return merged
     }
 
