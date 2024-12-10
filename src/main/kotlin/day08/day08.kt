@@ -4,9 +4,7 @@
 package day08
 
 import common.aocreader.fetchAdventOfCodeInput
-import common.day
 import common.intpos2d.*
-import common.readInput
 
 private typealias Frequency = Char
 private typealias AntennaMap = Map<Frequency, Set<IntPos2D>>
