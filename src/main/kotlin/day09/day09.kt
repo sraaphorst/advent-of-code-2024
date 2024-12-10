@@ -35,7 +35,10 @@ class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
         file.blocks.sortBy(Range::last)
     }
 
-    fun rearrange() {
+    /**
+     * Reparse before using this.
+     */
+    fun rearrange1() {
         // We want to get the highest block and move it to the earliest position if
         // it makes sense to do so.
         while (true) {
@@ -103,6 +106,43 @@ class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
         }
     }
 
+    /**
+     * Reparse before using this.
+     */
+    fun rearrange2() {
+        for (file in files.reversed()) {
+            // At this point, each file only has one range.
+            val fileId = file.id
+            val fileRange = file.blocks.lastOrNull() ?: error("No data for $fileId")
+            val fileRangeSize = fileRange.size()
+
+            // Find the first gap it will fit.
+            val gap = gaps.firstOrNull { gap -> gap.size() >= fileRangeSize && gap.start < fileRange.start} ?: continue
+            val gapSize = gap.size()
+
+            when {
+                fileRangeSize == gapSize -> {
+                    // The files are the same size. Just move the file to the gap.
+                    file.blocks = mutableListOf(gap)
+                    gaps.remove(gap)
+                }
+                fileRangeSize < gapSize -> {
+                    val dividingPoint = gap.start + fileRangeSize
+                    val gap1 = gap.start until dividingPoint
+                    val gap2 = dividingPoint..gap.last
+
+                    file.blocks = mutableListOf(gap1)
+                    gaps.remove(gap)
+                    gaps.add(gap2)
+                }
+            }
+
+            // Sort the gaps.
+            sortGaps()
+            gaps = mergeRanges(gaps)
+        }
+    }
+
     fun mergeRanges(ranges: MutableList<Range>): MutableList<Range> {
         if (ranges.isEmpty()) return mutableListOf()
 
@@ -162,12 +202,15 @@ class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
 
 fun answer1(input: String): BigInteger {
     val f = Filesystem.parse(input)
-    f.rearrange()
+    f.rearrange1()
     return f.checksum()
 }
 
-fun answer2(input: String): Int =
-    TODO()
+fun answer2(input: String): BigInteger {
+    val f = Filesystem.parse(input)
+    f.rearrange2()
+    return f.checksum()
+}
 
 
 fun main() {
@@ -178,6 +221,6 @@ fun main() {
     // Part 1: 6384282079460
     println("Part 1: ${answer1(input)}")
 
-    // Part 2:
-//    println("Part 2: ${answer2(input)}")
+    // Part 2: 6408966547049
+    println("Part 2: ${answer2(input)}")
 }
