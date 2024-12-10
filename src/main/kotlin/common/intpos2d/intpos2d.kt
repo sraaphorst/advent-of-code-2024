@@ -16,3 +16,24 @@ operator fun Int.times(pos: IntPos2D): IntPos2D =
 
 operator fun IntPos2D.times(factor: Int) =
     factor * this
+
+enum class Direction(val delta: IntPos2D) {
+    NORTH(IntPos2D(-1, 0)),
+    EAST(IntPos2D(0, 1)),
+    SOUTH(IntPos2D(1, 0)),
+    WEST(IntPos2D(0, -1));
+
+    fun clockwise(): Direction = when (this) {
+        NORTH -> EAST
+        EAST -> SOUTH
+        SOUTH -> WEST
+        WEST -> NORTH
+    }
+
+    fun counterClockwise(): Direction = when (this) {
+        NORTH -> WEST
+        WEST -> SOUTH
+        SOUTH -> EAST
+        EAST -> NORTH
+    }
+}

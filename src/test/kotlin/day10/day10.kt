@@ -27,5 +27,5 @@ class Day10Test {
 
     @Test
     fun `Problem 2 example`() =
-        assertEquals(TODO(), answer2(input))
+        assertEquals(81, answer2(input))
 }
