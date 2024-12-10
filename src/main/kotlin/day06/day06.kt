@@ -9,23 +9,6 @@ package day06
 import common.aocreader.fetchAdventOfCodeInput
 import common.intpos2d.*
 
-/**
- * The direction that the guard is facing and moves in.
- */
-private enum class Direction(val delta: IntPos2D) {
-    NORTH(IntPos2D(-1, 0)),
-    SOUTH(IntPos2D(1, 0)),
-    EAST(IntPos2D(0, 1)),
-    WEST(IntPos2D(0, -1));
-
-    fun clockwise(): Direction = when (this) {
-        NORTH -> EAST
-        EAST -> SOUTH
-        SOUTH -> WEST
-        WEST -> NORTH
-    }
-}
-
 private typealias Orientation = Pair<Direction, IntPos2D>
 
 private data class MapGrid(val rows: Int,

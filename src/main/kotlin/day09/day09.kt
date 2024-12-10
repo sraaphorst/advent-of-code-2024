@@ -191,7 +191,7 @@ fun answer2(input: String): BigInteger =
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 9)
 
-    println("--- Day 9: Resonant Collinearity ---")
+    println("--- Day 9: Disk Fragmenter ---")
 
     // Part 1: 6384282079460
     println("Part 1: ${answer1(input)}")
