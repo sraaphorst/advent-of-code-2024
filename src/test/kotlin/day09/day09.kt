@@ -16,7 +16,7 @@ class Day09Test {
 
     @Test
     fun `Problem 1 example`() =
-        assertEquals(1928, answer1(input))
+        assertEquals(1928.toBigInteger(), answer1(input))
 
 //    @Test
 //    fun `Problem 2 example`() =

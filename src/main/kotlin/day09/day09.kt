@@ -4,191 +4,179 @@
 package day09
 
 import common.aocreader.fetchAdventOfCodeInput
+import java.math.BigInteger
 
-private typealias Unused = IntRange
-data class File(val idx: Int, var blocks: MutableList<IntRange>)
+typealias Range = LongRange
+typealias RangeList = MutableList<Range>
 
-// Data format:
-// file0 freespace file1 freespace...
-fun parse(input: String): Pair<List<File>, MutableList<Unused>> {
-    tailrec fun aux(
-        remainingString: String = input,
-        fileNumber: Int = 0,
-        currentBlock: Int = 0,
-        files: List<File> = listOf(),
-        gaps: MutableList<Unused> = mutableListOf()
-    ): Pair<List<File>, MutableList<Unused>> = when {
-        remainingString.isEmpty() -> files to gaps
-        else -> {
-            val fileSize = remainingString[0].digitToInt()
-            val file = File(fileNumber, mutableListOf(currentBlock until (currentBlock + fileSize)))
-            val nextBlock = currentBlock + fileSize - 1
+private fun Range.size(): Long =
+    last - first + 1
 
-            val gapSize = remainingString.getOrNull(1)?.digitToInt() ?: 0
-            if (gapSize > 0)
-                gaps.add(nextBlock + 1 until (nextBlock + gapSize + 1))
+data class File(val id: Int, var blocks: RangeList)
 
-            aux(
-                remainingString.drop(2),
-                fileNumber + 1,
-                nextBlock + 1 + gapSize,
-                files + file,
-                gaps
-            )
-        }
-    }
-    return aux()
-}
-
-private fun mergeRanges(ranges: MutableList<Unused>): MutableList<Unused> {
-    if (ranges.isEmpty()) return mutableListOf()
-
-    // Sort the ranges by their start values
-    val sortedRanges = ranges.sortedBy { it.first }
-    val merged = mutableListOf<IntRange>()
-
-    var currentRange = sortedRanges.first()
-
-    for (range in sortedRanges.drop(1)) {
-        if (range.first <= currentRange.last + 1) {
-            // Merge ranges if they overlap or are contiguous
-            currentRange = currentRange.first..maxOf(currentRange.last, range.last)
-        } else {
-            // Add the non-overlapping range to the result
-            merged.add(currentRange)
-            currentRange = range
-        }
+class Filesystem(var files: MutableList<File>, var gaps: RangeList) {
+    init {
+        sortGaps()
+        sortFiles()
     }
 
-    // Add the final range
-    merged.add(currentRange)
+    // The gaps need to be sorted by the first block they occupy.
+    private fun sortGaps() {
+        gaps.sortBy { g -> g.first }
+    }
 
-    return merged
-}
+    // The files need to be sorted by the last block they occupy.
+    private fun sortFiles() {
+        files.sortBy { file -> file.blocks.maxOfOrNull(Range::last) }
+    }
 
+    // Sorts the file so that the highest range is in the last block.
+    private fun sortFile(file: File) {
+        file.blocks.sortBy(Range::last)
+    }
 
+    fun rearrange() {
+        // We want to get the highest block and move it to the earliest position if
+        // it makes sense to do so.
+        while (true) {
+            // Get the last file, which we want to move earlier if possible, and the
+            // first gap, which is where we want to put it at.
+            var lastFile = files.lastOrNull() ?: break
+            val lastBlock = lastFile.blocks.lastOrNull() ?: break
+            var firstGap = gaps.firstOrNull() ?: break
 
-// Gaps are already sorted.
-// Files are sorted in reverse order.
-private fun consolidateFiles(files: List<File>, gaps: MutableList<Unused>): List<File> {
-    var currentGaps = gaps
-    for (file in files.reversed()) {
-        // Calculate the new range of blocks for the file.
-        val newBlocks = mutableListOf<IntRange>()
+            // We are done if the first gap is before the end of the last file.
+            if (firstGap.first >= lastBlock.last)
+                break
 
-        for (block in file.blocks.reversed()) {
-            var remainingSize = block.last - block.first + 1 // Size of the current block
-            while (remainingSize > 0 && currentGaps.isNotEmpty()) {
-                currentGaps = mergeRanges(currentGaps)
-                val gap = currentGaps.first()
-                val gapSize = gap.last - gap.first + 1
-                println("Moving file ${file.idx} block ${block.last - gapSize}..${block.last} to ${gap}")
+            // Otherwise we have three cases.
+            val blockSize = lastBlock.size()
+            val gapSize = firstGap.size()
 
-                if (gapSize >= remainingSize) {
-                    // We can place all peeled blocks into this gap starting at gap.first
-                    val end = gap.first + remainingSize - 1
-                    newBlocks.add(gap.first..end)
-//                    currentGaps.add(block)
-
-                    // Update or remove the gap accordingly
-                    if (gapSize > remainingSize) {
-                        // Shrink gap from the left
-                        currentGaps[0] = (end + 1)..gap.last
-                    } else {
-                        // Fully consumed the gap
-                        currentGaps.removeAt(0)
-                    }
-
-                    remainingSize = 0
-                } else {
-                    // We can't fit all here, use the entire gap
-                    newBlocks.add(gap)
-                    currentGaps.removeAt(0)
-                    remainingSize -= gapSize
+            when {
+                gapSize == blockSize -> {
+                    // The sizes are the same, in which case we flip them.
+                    gaps -= firstGap
+                    lastFile.blocks -= lastBlock
+                    lastFile.blocks += firstGap
                 }
-                println("Now:")
-                println("currentGaps: $currentGaps")
-                println("newBlocks: $newBlocks")
+
+                gapSize > blockSize -> {
+                    // If the gap is bigger than the block, we divide the gap in two
+                    // and move the block to the first part of the gap.
+                    val dividingPoint = firstGap.first + blockSize
+                    val subGap1 = firstGap.first until dividingPoint
+                    val subGap2 = dividingPoint..firstGap.last
+
+                    lastFile.blocks -= lastBlock
+                    lastFile.blocks += subGap1
+
+                    gaps -= firstGap
+                    gaps += subGap2
+                    gaps += lastBlock
+                }
+
+                gapSize < blockSize -> {
+                    // If the block is bigger than the gap, we divide the block in two
+                    // and move the last part to the gap.
+                    val dividingPoint = lastBlock.last - gapSize + 1
+                    val subBlock1 = lastBlock.first until dividingPoint
+                    val subBlock2 = dividingPoint..lastBlock.last
+
+                    lastFile.blocks -= lastBlock
+                    lastFile.blocks += firstGap
+                    lastFile.blocks += subBlock1
+
+                    gaps -= firstGap
+
+                    // Do we need this?
+                    gaps += subBlock2
+                }
             }
 
-            if (remainingSize > 0) {
-                // Any leftover remains at the low end of the original block
-                val leftoverEnd = block.first + remainingSize - 1
-                newBlocks.add(block.first..leftoverEnd)
+            // Re-sort.
+            sortFile(lastFile)
+            mergeRanges(lastFile.blocks).let { lastFile.blocks = it }
+            sortFiles()
+            sortGaps()
+            gaps = mergeRanges(gaps)
+        }
+    }
+
+    fun mergeRanges(ranges: MutableList<Range>): MutableList<Range> {
+        if (ranges.isEmpty()) return mutableListOf()
+
+        // Sort the ranges by their start values
+        val sortedRanges = ranges.sortedBy { it.first }
+        val merged = mutableListOf<Range>()
+
+        var currentRange = sortedRanges.first()
+
+        for (range in sortedRanges.drop(1)) {
+            if (range.first <= currentRange.last + 1) {
+                // Merge ranges if they overlap or are contiguous
+                currentRange = currentRange.first..maxOf(currentRange.last, range.last)
+            } else {
+                // Add the non-overlapping range to the result
+                merged.add(currentRange)
+                currentRange = range
             }
         }
 
-        // Update the file's blocks
-        file.blocks = newBlocks
+        // Add the final range
+        merged.add(currentRange)
+
+        return merged
     }
 
-    // Reconstruct the drive layout
-    val driveSize = files.flatMap { it.blocks }.maxOf { it.last } + 1
-    val drive = CharArray(driveSize) { '.' }
+    fun checksum(): BigInteger =
+        files.sumOf { (idx, block) -> block.sumOf { pos -> pos.sumOf { idx * it }.toBigInteger() } }
 
-    for (file in files) {
-        for (block in file.blocks) {
-            for (i in block) {
-                drive[i] = '0' + file.idx
+    companion object {
+        private fun isFile(idx: Int) = idx % 2 == 0
+        private fun isSpace(idx: Int) = idx % 2 == 1
+
+        fun parse(input: String): Filesystem {
+            val files: MutableList<File> = mutableListOf()
+            val space: RangeList = mutableListOf()
+            var currBlock = 0L
+
+            input.withIndex().forEach { (idx, ch) ->
+                val length: Int = ch.digitToInt()
+
+                // Skip any entries with length 0.
+                if (length > 0) {
+                    val range: Range = currBlock until (currBlock + length)
+                    if (isFile(idx))
+                        files.add(File(idx / 2, mutableListOf(range)))
+                    else if (isSpace(idx))
+                        space.add(range)
+                    currBlock += length
+                }
             }
+
+            return Filesystem(files, space)
         }
     }
-
-    println(String(drive))
-
-    // Reconstruct the drive layout
-    return files
 }
 
-
-private fun checksum(files: List<File>): Int =
-    files.sumOf { file -> file.blocks.sumOf { file.idx * it.sum() }}
-
-
-fun answer1(input: String): Int =
-    parse(input)
-        .let { consolidateFiles(it.first, it.second) }
-        .let(::checksum)
+fun answer1(input: String): BigInteger {
+    val f = Filesystem.parse(input)
+    f.rearrange()
+    return f.checksum()
+}
 
 fun answer2(input: String): Int =
     TODO()
 
 
 fun main() {
-//    val input2 = "2333133121414131402"
-    val input2 = "12345"
-    val (files2, gaps2) = parse(input2)
-    consolidateFiles(files2, gaps2)
-    println("\n\n\n")
     val input = fetchAdventOfCodeInput(2024, 9)
-//    val input = "2333133121414131402"
-    println("--- Day 9: Disk Fragmenter ---")
 
-//    val files = listOf(
-//        File(0, mutableListOf(0..1)),
-//        File(1, mutableListOf(5..7)),
-//        File(2, mutableListOf(11..11)),
-//        File(3, mutableListOf(15..17)),
-//        File(4, mutableListOf(19..20)),
-//        File(5, mutableListOf(22..25)),
-//        File(6, mutableListOf(27..30)),
-//        File(7, mutableListOf(32..34)),
-//        File(8, mutableListOf(36..39)),
-//        File(9, mutableListOf(40..41))
-//    )
-//    val gaps = mutableListOf(2..4, 8..10, 12..14, 18..18, 21..21, 26..26, 31..31, 35..35)
-//
-//    (0..41).forEach { i -> print(i / 10)}
-//    println()
-//    (0..41).forEach { i -> print(i % 10)}
-//    println()
-//    (0..41).forEach { print("-") }
-//    println()
-//    val result = consolidateFiles(files, gaps)
-//    println("0099811188827773336446555566..............")
-//    println(result)
-//    // Part 1:
-//    println("Part 1: ${answer1(input)}")
+    println("--- Day 9: Resonant Collinearity ---")
+
+    // Part 1: 6384282079460
+    println("Part 1: ${answer1(input)}")
 
     // Part 2:
 //    println("Part 2: ${answer2(input)}")
