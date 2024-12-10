@@ -36,4 +36,11 @@ enum class Direction(val delta: IntPos2D) {
         SOUTH -> EAST
         EAST -> NORTH
     }
+
+    fun opposite(): Direction = when (this) {
+        NORTH -> SOUTH
+        EAST -> WEST
+        SOUTH -> NORTH
+        WEST -> EAST
+    }
 }
