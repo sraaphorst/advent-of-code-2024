@@ -5,6 +5,7 @@ package day05
 
 import common.aocreader.fetchAdventOfCodeInput
 import common.collectionops.middle
+import common.runner.timedFunction
 
 private typealias OrderingRules = Map<Int, Set<Int>>
 private typealias Updates = List<Int>
@@ -96,12 +97,7 @@ fun answer2(input: String): Int =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 5)
-
     println("--- Day 5: Print Queue ---")
-
-    // Part 1: 4281
-    println("Part 1: ${answer1(input)}")
-
-    // Part 2: 5466
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) } // 4281
+    timedFunction("Part 2") { answer2(input) } // 5466
 }

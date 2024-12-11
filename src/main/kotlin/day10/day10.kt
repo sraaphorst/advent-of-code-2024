@@ -1,10 +1,11 @@
-// Advent of Code 2024, Day 09.
+// Advent of Code 2024, Day 10.
 // By Sebastian Raaphorst, 2024.
 
 package day10
 
 import common.aocreader.fetchAdventOfCodeInput
 import common.intpos2d.*
+import common.runner.timedFunction
 
 private typealias Trail = List<IntPos2D>
 private typealias Trails = Set<List<IntPos2D>>
@@ -57,12 +58,7 @@ fun answer2(input: String): Int =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 10)
-
     println("--- Day 10: Hoof It ---")
-
-    // Part 1: 719
-    println("Part 1: ${answer1(input)}")
-
-    // Part 2: 1530
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) } // 719
+    timedFunction("Part 2") { answer2(input) } // 1530
 }

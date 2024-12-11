@@ -4,9 +4,8 @@
 package day07
 
 import common.aocreader.fetchAdventOfCodeInput
-import common.day
 import common.parsing.WhitespaceParser
-import common.readInput
+import common.runner.timedFunction
 import java.math.BigInteger
 
 data class Equation(val total: BigInteger, val numbers: List<BigInteger>) {
@@ -61,12 +60,7 @@ fun answer2(input: String): BigInteger =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 7)
-
     println("--- Day 7: Bridge Repair ---")
-
-    // Part 1: 2437272016585
-    println("Part 1: ${answer1(input)}")
-
-    // Part 2: 162987117690649
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) } // 2437272016585
+    timedFunction("Part 2") { answer2(input) } // 162987117690649
 }

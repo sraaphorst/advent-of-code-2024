@@ -1,13 +1,11 @@
 // Advent of Code 2024, Day 06.
 // By Sebastian Raaphorst, 2024.
 
-// NOTE: Trying to use pure FP in this question made part 2 run extremely slowly.
-// Mutable data structures are needed to avoid having to continuously copy structures.
-
 package day06
 
 import common.aocreader.fetchAdventOfCodeInput
 import common.intpos2d.*
+import common.runner.timedFunction
 
 private typealias Orientation = Pair<Direction, IntPos2D>
 
@@ -84,12 +82,7 @@ fun answer2(input: String): Int =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 6)
-
     println("--- Day 6: Guard Gallivant ---")
-
-    // Part 1: 5208
-    println("Part 1: ${answer1(input)}")
-
-    // Part 2: 1972
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) } // 5208
+    timedFunction("Part 2") { answer2(input) } // 1972
 }

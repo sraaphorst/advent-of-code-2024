@@ -6,6 +6,7 @@ package day04
 import common.aocreader.fetchAdventOfCodeInput
 import common.countSubstrings
 import common.collectionops.*
+import common.runner.timedFunction
 
 private const val XMAS = "XMAS"
 
@@ -60,12 +61,7 @@ fun answer2(input: String): Int =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 4)
-
     println("--- Day 4: Ceres Search ---")
-
-    // Answer 1: 2370
-    println("Part 1: ${answer1(input)}")
-
-    // Answer 2: 1908
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) } // 2370
+    timedFunction("Part 2") { answer2(input) } // 1908
 }

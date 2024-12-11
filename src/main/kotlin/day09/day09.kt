@@ -4,6 +4,7 @@
 package day09
 
 import common.aocreader.fetchAdventOfCodeInput
+import common.runner.timedFunction
 import java.math.BigInteger
 
 private typealias Range = LongRange
@@ -190,12 +191,7 @@ fun answer2(input: String): BigInteger =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 9)
-
     println("--- Day 9: Disk Fragmenter ---")
-
-    // Part 1: 6384282079460
-    println("Part 1: ${answer1(input)}")
-
-    // Part 2: 6408966547049
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) } // 6384282079460
+    timedFunction("Part 2") { answer2(input) } // 6408966547049
 }

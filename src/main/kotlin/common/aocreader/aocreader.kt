@@ -1,3 +1,6 @@
+// Advent of Code 2024
+// By Sebastian Raaphorst, 2024.
+
 package common.aocreader
 
 import java.net.HttpURLConnection

@@ -6,6 +6,7 @@ package day02
 import common.aocreader.fetchAdventOfCodeInput
 import common.collectionops.allListDrops
 import common.parsing.parseGrid
+import common.runner.timedFunction
 
 private const val Lower = 1
 private const val Upper = 3
@@ -30,12 +31,7 @@ fun answer2(input: String): Int =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 2)
-
     println("--- Day 2: Red-Nosed Reports ---")
-
-    // Answer 1: 379
-    println("Part 1: ${answer1(input)}")
-
-    // Answer 2: 430
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) } // 379
+    timedFunction("Part 2") { answer2(input) } // 430
 }
