@@ -5,6 +5,7 @@ package day08
 
 import common.aocreader.fetchAdventOfCodeInput
 import common.intpos2d.*
+import common.runner.timedFunction
 
 private typealias Frequency = Char
 private typealias AntennaMap = Map<Frequency, Set<IntPos2D>>
@@ -83,12 +84,7 @@ fun answer2(input: String): Int =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 8)
-
     println("--- Day 8: Resonant Collinearity ---")
-
-    // Part 1: 376
-    println("Part 1: ${answer1(input)}")
-
-    // Part 2: 1352
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) } // 376
+    timedFunction("Part 2") { answer2(input) } // 1352
 }

@@ -21,7 +21,6 @@ class Day04Test {
             MAMMMXMMMM
             MXMXAXMASX
             """.trimIndent()
-
     }
 
     @Test

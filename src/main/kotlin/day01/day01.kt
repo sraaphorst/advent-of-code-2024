@@ -6,6 +6,7 @@ package day01
 import common.aocreader.fetchAdventOfCodeInput
 import common.parsing.parseColumns
 import common.collectionops.toFrequencyMap
+import common.runner.timedFunction
 import kotlin.math.abs
 
 fun answer1(input: String): Int =
@@ -25,12 +26,7 @@ fun answer2(input: String): Int =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 1)
-
     println("--- Day 1: Historian Hysteria ---")
-
-    // Answer 1: 2031679
-    println("Part 1: ${answer1(input)}")
-
-    // Answer 2: 19678534
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) } // 2031679
+    timedFunction("Part 2") { answer2(input) } // 19678534
 }

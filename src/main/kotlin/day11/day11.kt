@@ -5,44 +5,45 @@ package day11
 
 import common.aocreader.fetchAdventOfCodeInput
 import common.parsing.WhitespaceParser
+import common.runner.timedFunction
+import day11.StoneRules.cacheSize
+import java.util.concurrent.ConcurrentHashMap
 
-private fun parse(input: String): MutableMap<Long, Long> {
-    val result = mutableMapOf<Long, Long>()
-    input.split(WhitespaceParser).map(String::toLong).forEach { num ->
-        result[num] = result.getOrDefault(num, 0) + 1
-    }
-    return result
-}
+
+private fun parse(input: String): MutableMap<Long, Long> =
+    input.split(WhitespaceParser)
+        .map(String::toLong)
+        .groupingBy { it }
+        .eachCount()
+        .mapValues { it.value.toLong() }
+        .toMutableMap()
 
 // The key is that the order of the stones have no relevance.
 private object StoneRules {
-    private val memoization: MutableMap<Long, List<Long>> = mutableMapOf()
+    private val memoization: MutableMap<Long, List<Long>> = ConcurrentHashMap()
 
-    private fun rule(stone: Long): List<Long> =
-        memoization.computeIfAbsent(stone) { num ->
-            if (num == 0L) return@computeIfAbsent listOf(1L)
-
-            val asString = num.toString()
-            if (asString.length % 2 == 0) {
-                val middle = asString.length / 2
-                val firstHalf = asString.substring(0, middle).toLong()
-                val secondHalf = asString.substring(middle).toLong()
-                return@computeIfAbsent listOf(firstHalf, secondHalf)
+    private fun rule(stone: Long): List<Long> = memoization.computeIfAbsent(stone) {
+        when {
+            it == 0L -> listOf(1L)
+            it.toString().length % 2 == 0 -> {
+                val middle = it.toString().length / 2
+                listOf(
+                    it.toString().substring(0, middle).toLong(),
+                    it.toString().substring(middle).toLong()
+                )
             }
-
-            return@computeIfAbsent listOf(stone * 2024)
+            else -> listOf(it * 2024)
         }
-
-    fun blink(stones: MutableMap<Long, Long>): MutableMap<Long, Long> {
-        val newStones = mutableMapOf<Long, Long>()
-        for ((stone, count) in stones) {
-            val transformed = rule(stone)
-            for (tStone in transformed) {
-                newStones[tStone] = newStones.getOrDefault(tStone, 0L) + count
-            }
-        }
-        return newStones
     }
+
+    fun blink(stones: Map<Long, Long>): MutableMap<Long, Long> =
+        stones.flatMap { (stone, count) ->
+            rule(stone).map { transformed -> transformed to count }
+        }.groupingBy { it.first }
+            .fold(0L) { acc, (_, count) -> acc + count }
+            .toMutableMap()
+
+    fun cacheSize(): Int = memoization.size
 }
 
 private fun answer(input: String, blinks: Int): Long =
@@ -57,12 +58,9 @@ fun answer2(input: String): Long =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 11)
-
     println("--- Day 11: Plutonian Pebbles ---")
-
-    // Part 1:185894, memoization cache has size 1381.
-    println("Part 1: ${answer1(input)}")
-
-    // Part 2: 221632504974231, memoization cache has size 3896.
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) }
+    println("\tCache size: ${cacheSize()}")
+    timedFunction("Part 2") { answer2(input) }
+    println("\tCache size: ${cacheSize()}")
 }

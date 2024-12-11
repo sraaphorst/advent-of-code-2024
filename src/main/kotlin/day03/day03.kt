@@ -4,6 +4,7 @@
 package day03
 
 import common.aocreader.fetchAdventOfCodeInput
+import common.runner.timedFunction
 
 /**
  * We want to turn off processing for substrings of the form:
@@ -31,12 +32,7 @@ fun answer2(input: String): Int =
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 3)
-
     println("--- Day 3: Mull It Over ---")
-
-    // Answer 1: 173785482
-    println("Part 1: ${answer1(input)}")
-
-    // Answer 2: 83158140
-    println("Part 2: ${answer2(input)}")
+    timedFunction("Part 1") { answer1(input) } // 173785482
+    timedFunction("Part 2") { answer2(input) } // 83158140
 }
