@@ -59,8 +59,8 @@ fun answer2(input: String): Long =
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 11)
     println("--- Day 11: Plutonian Pebbles ---")
-    timedFunction("Part 1") { answer1(input) }
+    timedFunction("Part 1") { answer1(input) } // 185894
     println("\tCache size: ${cacheSize()}")
-    timedFunction("Part 2") { answer2(input) }
+    timedFunction("Part 2") { answer2(input) } // 221632504974231
     println("\tCache size: ${cacheSize()}")
 }
