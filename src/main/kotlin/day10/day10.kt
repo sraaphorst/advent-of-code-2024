@@ -1,4 +1,4 @@
-// Advent of Code 2024, Day 09.
+// Advent of Code 2024, Day 10.
 // By Sebastian Raaphorst, 2024.
 
 package day10
