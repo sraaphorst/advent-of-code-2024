@@ -4,9 +4,8 @@
 package common.gridalgorithms
 
 import common.intpos2d.*
-import common.parsing.Grid
 
-data class Region(val area: Int, val perimeter: Int)
+data class Region(val area: Int, val perimeter: Int, val edges: Int)
 
 fun findRegions(grid: Grid<Char>): List<Region> {
     val visited = mutableSetOf<IntPos2D>()
@@ -23,6 +22,7 @@ fun findRegions(grid: Grid<Char>): List<Region> {
         var area = 0
         var perimeter = 0
         val symbol = grid[start.first][start.second]
+        var corners = 0
 
         while (stack.isNotEmpty()) {
             val pos = stack.removeLast()
@@ -41,6 +41,24 @@ fun findRegions(grid: Grid<Char>): List<Region> {
                             || pos2.second < 0 || pos2.second >= cols }
                 perimeter += localPerimeter + outOfBounds
 
+                // Calculate the corners, which will ultimately give us the number of
+                // edges. Every corner is a shift in direction, indicating an edge.
+                corners += Diagonals.count { (d1, d2) ->
+                    val side1 = grid[pos + d1.delta]
+                    val side2 = grid[pos + d2.delta]
+                    val corner = grid[pos + d1.delta + d2.delta]
+
+                    // Two cases:
+                    // 1. The symbol here is different from the corners:
+                    //        ? B
+                    //        B A
+                    // 2. The symbol is the same as the sides but different from the corner:
+                    //        B A
+                    //        A A
+                    (symbol != side1 && symbol != side2) ||
+                            (symbol == side1 && symbol == side2 && symbol != corner)
+                }
+
                 // Add valid neighbors to the stack
                 stack.addAll(
                     neighbours(pos).filter { pos2 ->
@@ -50,13 +68,15 @@ fun findRegions(grid: Grid<Char>): List<Region> {
             }
         }
 
-        return Region(area, perimeter)
+        // area is A
+        // perimeter is b
+        return Region(area, perimeter, corners)
     }
 
     // Iterate over the grid and find all regions
     return (0 until rows).flatMap { x ->
         (0 until cols).mapNotNull { y ->
-            if (x to y !in visited) floodFill(x to y) else null
+            if (IntPos2D(x, y) !in visited) floodFill(x to y) else null
         }
     }
 }

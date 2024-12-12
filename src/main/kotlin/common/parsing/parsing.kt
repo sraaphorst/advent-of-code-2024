@@ -3,6 +3,8 @@
 
 package common.parsing
 
+import common.gridalgorithms.Grid
+
 val WhitespaceParser = Regex("""\s+""")
 
 /**
@@ -18,8 +20,6 @@ fun <C1, C2> parseColumns(input: String,
                 .split(WhitespaceParser)
                 .let { toC1(it[0]) to toC2(it[1]) }
         }.unzip()
-
-typealias Grid<T> = List<List<T>>
 
 /**
  * Parse a grid of values and return as a list of lists.

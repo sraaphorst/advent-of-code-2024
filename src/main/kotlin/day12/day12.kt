@@ -5,25 +5,27 @@ package day12
 
 import common.aocreader.fetchAdventOfCodeInput
 import common.gridalgorithms.*
-import common.parsing.Grid
 import common.parsing.parseCharGrid
 import common.runner.timedFunction
 
-private fun regionCosts(regions: Collection<Region>): Long =
-    regions.sumOf { region -> region.area.toLong() * region.perimeter.toLong() }
+private fun regionCosts1(regions: Collection<Region>): Int =
+    regions.sumOf { region -> region.area * region.perimeter }
+
+private fun regionCosts2(regions: Collection<Region>): Int =
+    regions.sumOf { region -> region.area * region.edges }
 
 fun parse(input: String): Grid<Char> =
     parseCharGrid(input)
 
-fun answer1(input: String): Long =
-    parse(input).let(::findRegions).let(::regionCosts)
+fun answer1(input: String): Int =
+    parse(input).let(::findRegions).let(::regionCosts1)
 
-fun answer2(input: String): Long =
-    TODO()
+fun answer2(input: String): Int =
+    parse(input).let(::findRegions).let(::regionCosts2)
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 12)
     println("--- Day 12: Garden Groups ---")
     timedFunction("Part 1") { answer1(input) } // 1522850
-//    timedFunction("Part 2") { answer2(input) } //
+    timedFunction("Part 2") { answer2(input) } // 953738
 }

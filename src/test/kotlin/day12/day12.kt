@@ -8,7 +8,15 @@ import kotlin.test.assertEquals
 
 class Day12 {
     companion object {
-        val input =
+        val input1 =
+            """
+            AAAA
+            BBCD
+            BBCC
+            EEEC
+            """.trimIndent()
+
+        val input2 =
             """
             RRRRIICCFF
             RRRRIICCCF
@@ -24,6 +32,14 @@ class Day12 {
     }
 
     @Test
-    fun `Problem 1 example`() =
-        assertEquals(1930L, answer1(input))
+    fun `Problem 1 example`() {
+        assertEquals(140, answer1(input1))
+        assertEquals(1930, answer1(input2))
+    }
+
+    @Test
+    fun `Problem2 example`() {
+        assertEquals(80, answer2(input1))
+        assertEquals(1206, answer2(input2))
+    }
 }
