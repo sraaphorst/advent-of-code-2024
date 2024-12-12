@@ -47,3 +47,7 @@ enum class Direction(val delta: IntPos2D) {
         WEST -> EAST
     }
 }
+fun IntPos2D.neighbours(rows: Int, cols: Int): List<IntPos2D> =
+    Direction.entries.map { this + it.delta }
+        .filter { it.first in 0 until rows && it.second in 0 until rows }
+

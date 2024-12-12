@@ -19,15 +19,25 @@ fun <C1, C2> parseColumns(input: String,
                 .let { toC1(it[0]) to toC2(it[1]) }
         }.unzip()
 
+typealias Grid<T> = List<List<T>>
+
 /**
  * Parse a grid of values and return as a list of lists.
  * The lines must be separated by a newline, and the entries within the line with whitespace.
  * The grid can be ragged.
  */
-fun <T> parseGrid(input: String, toElem: (String) -> T): List<List<T>> =
+fun <T> parseGrid(input: String, toElem: (String) -> T): Grid<T> =
     input.lines()
         .filter(String::isNotBlank)
         .map { line ->
             line.trim()
                 .split(WhitespaceParser)
                 .map { toElem(it) } }
+
+/**
+ * Parse a grid that is just rows of chars.
+ */
+fun parseCharGrid(input: String): List<List<Char>> =
+    input.lines()
+        .filter(String::isNotBlank)
+        .map { line -> line.trim().map { it } }
