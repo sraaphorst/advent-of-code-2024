@@ -30,12 +30,6 @@ class Day13 {
 
     @Test
     fun `Problem 1 example`() {
-        assertEquals(480, answer1(input1))
+        assertEquals(480.toBigInteger(), answer1(input1))
     }
-
-//    @Test
-//    fun `Problem2 example`() {
-//        assertEquals(80, answer2(input1))
-//        assertEquals(1206, answer2(input2))
-//    }
 }
