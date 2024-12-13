@@ -1,4 +1,4 @@
-// Advent of Code 2024, Day 12
+// Advent of Code 2024, Day 12.
 // By Sebastian Raaphorst, 2024.
 
 package day12
