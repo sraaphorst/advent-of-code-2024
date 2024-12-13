@@ -4,7 +4,7 @@
 package day10
 
 import common.aocreader.fetchAdventOfCodeInput
-import common.gridalgorithms.neighbourPositions
+import common.gridalgorithms.*
 import common.intpos2d.*
 import common.runner.timedFunction
 
@@ -34,8 +34,7 @@ private fun findTrails(grid: List<List<Int>>): Map<IntPos2D, Trails> {
 
         // Try all the valid neighbours.
         val neighbours = grid.neighbourPositions(currentPos)
-//        val neighbours = currentPos.neighbours(rows, cols)
-//            .filter { coords -> grid[coords.first][coords.second] == currHeight + 1 }
+            .filter { (grid[it] ?: -1L) == currHeight + 1 }
         if (neighbours.isEmpty()) return emptySet()
 
         return neighbours.flatMap { pos -> aux(trailSoFar + pos) }.toSet()
