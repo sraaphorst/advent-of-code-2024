@@ -5,6 +5,14 @@ package common.intpos2d
 
 typealias IntPos2D = Pair<Int, Int>
 
+val Zero2D = IntPos2D(0, 0)
+
+fun IntPos2D.isZero() =
+    this == Zero2D
+
+fun IntPos2D.isNotZero() =
+    !isZero()
+
 operator fun IntPos2D.plus(other: IntPos2D) =
     IntPos2D(this.first + other.first, this.second + other.second)
 
@@ -19,6 +27,21 @@ operator fun Int.times(pos: IntPos2D): IntPos2D =
 
 operator fun IntPos2D.times(factor: Int) =
     factor * this
+
+operator fun IntPos2D.times(other: IntPos2D): IntPos2D =
+    IntPos2D(first * other.first, second * other.second)
+
+operator fun IntPos2D.rem(modulus: Int): IntPos2D =
+    IntPos2D(this.first % modulus, this.second % modulus)
+
+operator fun IntPos2D.div(denominator: Int): IntPos2D =
+    IntPos2D(this.first / denominator, this.second / denominator)
+
+infix fun IntPos2D.dot(other: IntPos2D): Int =
+    first * other.first + second * other.second
+
+fun IntPos2D.x(): Int = first
+fun IntPos2D.y(): Int = second
 
 enum class Direction(val delta: IntPos2D) {
     NORTH(IntPos2D(-1, 0)),
@@ -47,10 +70,6 @@ enum class Direction(val delta: IntPos2D) {
         WEST -> EAST
     }
 }
-
-//fun IntPos2D.neighbours(rows: Int, cols: Int): List<IntPos2D> =
-//    Direction.entries.map { this + it.delta }
-//        .filter { it.first in 0 until rows && it.second in 0 until rows }
 
 val Diagonals: Set<Pair<Direction, Direction>> = setOf(
     Pair(Direction.NORTH, Direction.WEST),
