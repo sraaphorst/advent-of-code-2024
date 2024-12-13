@@ -4,6 +4,7 @@
 package day10
 
 import common.aocreader.fetchAdventOfCodeInput
+import common.gridalgorithms.*
 import common.intpos2d.*
 import common.runner.timedFunction
 
@@ -15,8 +16,8 @@ private fun parse(input: String): List<List<Int>> =
         .map { line -> line.trim().toList().map { it.digitToIntOrNull() ?: -1 } }
 
 private fun findTrails(grid: List<List<Int>>): Map<IntPos2D, Trails> {
-    val height = grid.size
-    val width = grid[0].size
+    val rows = grid.size
+    val cols = grid[0].size
 
     val zeros = grid.flatMapIndexed { rowIdx, row ->
         row.mapIndexedNotNull { colIdx, height ->
@@ -32,10 +33,8 @@ private fun findTrails(grid: List<List<Int>>): Map<IntPos2D, Trails> {
         if (currHeight == 9) return setOf(trailSoFar)
 
         // Try all the valid neighbours.
-        val neighbours = Direction.entries
-            .map { currentPos + it.delta }
-            .filter { coords -> coords.first in 0 until height && coords.second in 0 until width }
-            .filter { coords -> grid[coords.first][coords.second] == currHeight + 1 }
+        val neighbours = grid.neighbourPositions(currentPos)
+            .filter { (grid[it] ?: -1L) == currHeight + 1 }
         if (neighbours.isEmpty()) return emptySet()
 
         return neighbours.flatMap { pos -> aux(trailSoFar + pos) }.toSet()
