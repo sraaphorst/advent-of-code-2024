@@ -4,30 +4,30 @@
 package day06
 
 import common.aocreader.fetchAdventOfCodeInput
-import common.intpos2d.*
+import common.vec2d.*
 import common.runner.timedFunction
 
-private typealias Orientation = Pair<Direction, IntPos2D>
+private typealias Orientation = Pair<Direction, Vec2DInt>
 
 private data class MapGrid(val rows: Int,
                            val cols: Int,
-                           val boundaries: Set<IntPos2D>) {
-    fun isBoundary(point: IntPos2D): Boolean =
+                           val boundaries: Set<Vec2DInt>) {
+    fun isBoundary(point: Vec2DInt): Boolean =
         point in boundaries
 
-    fun isInBounds(point: IntPos2D): Boolean =
-        point.first in 0 until rows && point.second in 0 until cols
+    fun isInBounds(point: Vec2DInt): Boolean =
+        point.x in 0 until rows && point.y in 0 until cols
 }
 
-private data class Guard(val startPosition: IntPos2D,
+private data class Guard(val startPosition: Vec2DInt,
                          val map: MapGrid) {
     /**
      * Simulate the guard's path and return either:
      * 1. A set of visited points if it escapes.
      * 2. Null if it enters a loop.
      */
-    fun move(addedPoint: IntPos2D? = null): Set<IntPos2D>? {
-        val visitedPoints = mutableSetOf<IntPos2D>()
+    fun move(addedPoint: Vec2DInt? = null): Set<Vec2DInt>? {
+        val visitedPoints = mutableSetOf<Vec2DInt>()
         val visitedStates = mutableSetOf<Orientation>()
 
         var currentPosition = startPosition
@@ -56,13 +56,13 @@ private data class Guard(val startPosition: IntPos2D,
  * Parse the input into a Guard and MapGrid.
  */
 private fun parse(input: String): Guard {
-    var startPosition: IntPos2D? = null
-    val barriers = mutableSetOf<IntPos2D>()
+    var startPosition: Vec2DInt? = null
+    val barriers = mutableSetOf<Vec2DInt>()
 
     input.trim().lines().forEachIndexed { x, row ->
         row.forEachIndexed { y, ch -> when (ch) {
-            '^' -> startPosition = IntPos2D(x, y)
-            '#' -> barriers.add(IntPos2D(x, y))
+            '^' -> startPosition = Vec2D.int(x, y)
+            '#' -> barriers.add(Vec2D.int(x, y))
         } }
     }
 
