@@ -4,47 +4,49 @@
 package day13
 
 import common.aocreader.fetchAdventOfCodeInput
-import common.intpos2d.*
+import common.vec2d.*
 import common.runner.timedFunction
 import java.math.BigInteger
 
-private typealias BigIntPos = Pair<BigInteger, BigInteger>
 
-data class Machine(val deltaA: IntPos2D, val deltaB: IntPos2D, val prizePos: IntPos2D) {
+data class Machine(val deltaA: Vec2DInt, val deltaB: Vec2DInt, val prizePos: Vec2DInt) {
     /**
      * Let a be the number of times we hit button A, and b be the number of times we hit button B.
      * We want an integer solution to the equation:
      * [dAx  dBx] (a) = (px)
      * [dAy  dBy] (b)   (py)
      */
-    fun calculateSolution(adjustment: BigIntPos): BigIntPos? {
-        val determinant = deltaA.x() * deltaB.y() - deltaB.x() * deltaA.y()
+    fun calculateSolution(adjustment: Vec2DBigInt): Vec2DBigInt? {
+        val determinant = deltaA.x * deltaB.y - deltaB.x * deltaA.y
         if (determinant == 0) return null
-        val detBigInteger = determinant.toBigInteger()
 
-        val adjPx = prizePos.x().toBigInteger() + adjustment.first
-        val adjPy = prizePos.y().toBigInteger() + adjustment.second
-        val abDet = BigIntPos(
-            deltaB.y().toBigInteger() * adjPx - deltaB.x().toBigInteger() * adjPy,
-            deltaA.x().toBigInteger() * adjPy - deltaA.y().toBigInteger() * adjPx)
+        // Adjusted prize pos.
+        val adjPrizePos = prizePos.toBigInteger() + adjustment
 
-        val detX = abDet.first % detBigInteger
-        val detY = abDet.second % detBigInteger
+        // Rows of the inverted matrix * determinant
+        val detR1 = Vec2D.int(deltaB.y, -deltaB.x)
+        val detR2 = Vec2D.int(-deltaA.y, deltaA.x)
 
-        return if (detX == BigInteger.ZERO && detY == BigInteger.ZERO)
-            BigIntPos(abDet.first / detBigInteger, abDet.second / detBigInteger)
-        else null
+        val abDet = Vec2D.bigInt(
+            deltaB.y.toBigInteger() * adjPrizePos.x - deltaB.x.toBigInteger() * adjPrizePos.y,
+            deltaA.x.toBigInteger() * adjPrizePos.y - deltaA.y.toBigInteger() * adjPrizePos.x)
+
+        // Mod these by determinant, and if zero, divide
+        val detBigInt = determinant.toBigInteger()
+        return if (abDet % detBigInt == Vec2DBigIntZero)
+            abDet / detBigInt
+        else
+            null
     }
 
     companion object {
-        val TokenCostA = 3.toBigInteger()
-        val TokenCostB = BigInteger.ONE
+        val TokenCost = Vec2D.bigInt(3.toBigInteger(), 1.toBigInteger())
 
         private val MachineRegex = """[XY][+=](\d+)""".toRegex()
 
         fun parse(input: String): Machine {
             val matches = MachineRegex.findAll(input).map { it.groupValues[1].toInt() }.toList()
-            val (deltaA, deltaB, prizePos) = matches.chunked(2).map { IntPos2D(it[0], it[1]) }
+            val (deltaA, deltaB, prizePos) = matches.chunked(2).map { Vec2D.int(it[0], it[1]) }
             return Machine(deltaA, deltaB, prizePos)
         }
     }
@@ -53,10 +55,10 @@ data class Machine(val deltaA: IntPos2D, val deltaB: IntPos2D, val prizePos: Int
 fun parse(input: String): List<Machine> =
     input.split("""[\r\n]{2}""".toRegex()).map { Machine.parse(it.trim()) }
 
-fun answer(input: String, adjustment: BigIntPos = BigIntPos(BigInteger.ZERO, BigInteger.ZERO)): BigInteger =
+fun answer(input: String, adjustment: Vec2DBigInt = Vec2DBigIntZero): BigInteger =
     parse(input)
         .mapNotNull { it.calculateSolution(adjustment) }
-        .sumOf { sol -> sol.first * Machine.TokenCostA + sol.second * Machine.TokenCostB }
+        .sumOf { sol -> sol dot Machine.TokenCost}
 
 fun answer1(input: String): BigInteger =
     answer(input)
@@ -64,7 +66,7 @@ fun answer1(input: String): BigInteger =
 private val adjustment2 = BigInteger("10000000000000")
 
 fun answer2(input: String): BigInteger =
-    answer(input, BigIntPos(adjustment2, adjustment2))
+    answer(input, Vec2D.bigInt(adjustment2, adjustment2))
 
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 13)

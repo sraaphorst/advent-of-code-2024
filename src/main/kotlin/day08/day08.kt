@@ -4,23 +4,23 @@
 package day08
 
 import common.aocreader.fetchAdventOfCodeInput
-import common.intpos2d.*
+import common.vec2d.*
 import common.runner.timedFunction
 
 private typealias Frequency = Char
-private typealias AntennaMap = Map<Frequency, Set<IntPos2D>>
+private typealias AntennaMap = Map<Frequency, Set<Vec2DInt>>
 
 private data class Grid(val height: Int, val width: Int, val antennae: AntennaMap) {
 
-    private fun inBounds(pos: IntPos2D): Boolean =
-        pos.first in 0 until height && pos.second in 0 until width
+    private fun inBounds(pos: Vec2DInt): Boolean =
+        pos.x in 0 until height && pos.y in 0 until width
 
-    fun calculateAntinodePair(pos1: IntPos2D, pos2: IntPos2D): Set<IntPos2D> {
+    fun calculateAntinodePair(pos1: Vec2DInt, pos2: Vec2DInt): Set<Vec2DInt> {
         val delta = pos1 - pos2
         return setOf(pos1 + delta, pos2 - delta).filter(::inBounds).toSet()
     }
 
-    fun calculateAllAntinodes(pos1: IntPos2D, pos2: IntPos2D): Set<IntPos2D> {
+    fun calculateAllAntinodes(pos1: Vec2DInt, pos2: Vec2DInt): Set<Vec2DInt> {
         val delta = pos1 - pos2
         val antinodes = mutableSetOf(pos1, pos2)
         val queue = mutableSetOf(pos1, pos2)
@@ -38,9 +38,9 @@ private data class Grid(val height: Int, val width: Int, val antennae: AntennaMa
     }
 
     private fun calculateAntinodesForFrequency(
-        positions: Set<IntPos2D>,
-        calculateAntinodes: (IntPos2D, IntPos2D) -> Set<IntPos2D>
-    ): Set<IntPos2D> =
+        positions: Set<Vec2DInt>,
+        calculateAntinodes: (Vec2DInt, Vec2DInt) -> Set<Vec2DInt>
+    ): Set<Vec2DInt> =
         positions.withIndex()
             .flatMap { (idx, pos1) ->
                 positions.drop(idx + 1).flatMap { pos2 ->
@@ -48,7 +48,7 @@ private data class Grid(val height: Int, val width: Int, val antennae: AntennaMa
                 }
             }.toSet()
 
-    fun calculateAntinodeCount(calculateAntinodes: (IntPos2D, IntPos2D) -> Set<IntPos2D>): Int =
+    fun calculateAntinodeCount(calculateAntinodes: (Vec2DInt, Vec2DInt) -> Set<Vec2DInt>): Int =
         antennae.values
             .flatMap { calculateAntinodesForFrequency(it, calculateAntinodes) }
             .toSet()
@@ -61,7 +61,7 @@ private data class Grid(val height: Int, val width: Int, val antennae: AntennaMa
                 .flatMap { (rowIdx, row) ->
                     row.withIndex()
                         .filter { (_, frequency) -> frequency != '.' }
-                        .map { (colIdx, frequency) -> frequency to IntPos2D(rowIdx, colIdx) }
+                        .map { (colIdx, frequency) -> frequency to Vec2D.int(rowIdx, colIdx) }
                 }
                 .groupBy({ it.first }, { it.second })
                 .mapValues { (_, positions) -> positions.toSet() }

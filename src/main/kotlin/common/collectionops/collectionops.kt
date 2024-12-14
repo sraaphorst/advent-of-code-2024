@@ -1,4 +1,4 @@
-// Advent of Code 2024
+// Advent of Code 2024.
 // By Sebastian Raaphorst, 2024.
 
 package common.collectionops

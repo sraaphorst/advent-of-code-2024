@@ -5,20 +5,20 @@ package day10
 
 import common.aocreader.fetchAdventOfCodeInput
 import common.gridalgorithms.*
-import common.intpos2d.*
 import common.runner.timedFunction
+import common.vec2d.*
 
-private typealias Trail = List<IntPos2D>
-private typealias Trails = Set<List<IntPos2D>>
+private typealias Trail = List<Vec2DInt>
+private typealias Trails = Set<List<Vec2DInt>>
 
 private fun parse(input: String): List<List<Int>> =
     input.trim().lines()
         .map { line -> line.trim().toList().map { it.digitToIntOrNull() ?: -1 } }
 
-private fun findTrails(grid: List<List<Int>>): Map<IntPos2D, Trails> {
+private fun findTrails(grid: List<List<Int>>): Map<Vec2DInt, Trails> {
     val zeros = grid.flatMapIndexed { rowIdx, row ->
         row.mapIndexedNotNull { colIdx, height ->
-            if (height == 0) IntPos2D(rowIdx, colIdx) else null
+            if (height == 0) Vec2D.int(rowIdx, colIdx) else null
         }
     }.toSet()
 
@@ -40,10 +40,10 @@ private fun findTrails(grid: List<List<Int>>): Map<IntPos2D, Trails> {
     return zeros.associate { zero -> zero to aux(listOf(zero)) }
 }
 
-private fun countTrailheads(trails: Map<IntPos2D, Trails>): Int =
+private fun countTrailheads(trails: Map<Vec2DInt, Trails>): Int =
     trails.values.sumOf { it.map { it.last() }.toSet().size }
 
-private fun countTrails(trails: Map<IntPos2D, Trails>): Int =
+private fun countTrails(trails: Map<Vec2DInt, Trails>): Int =
     trails.values.sumOf { it.count() }
 
 fun answer1(input: String): Int =
