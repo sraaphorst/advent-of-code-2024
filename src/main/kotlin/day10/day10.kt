@@ -16,9 +16,6 @@ private fun parse(input: String): List<List<Int>> =
         .map { line -> line.trim().toList().map { it.digitToIntOrNull() ?: -1 } }
 
 private fun findTrails(grid: List<List<Int>>): Map<IntPos2D, Trails> {
-    val rows = grid.size
-    val cols = grid[0].size
-
     val zeros = grid.flatMapIndexed { rowIdx, row ->
         row.mapIndexedNotNull { colIdx, height ->
             if (height == 0) IntPos2D(rowIdx, colIdx) else null
