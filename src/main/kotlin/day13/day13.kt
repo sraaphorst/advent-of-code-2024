@@ -21,7 +21,7 @@ data class Machine(val deltaA: Vec2DInt, val deltaB: Vec2DInt, val prizePos: Vec
         if (determinant == 0) return null
 
         // Adjusted prize pos.
-        val adjPrizePos = prizePos + adjustment
+        val adjPrizePos = prizePos.toBigInteger() + adjustment
 
         // Rows of the inverted matrix * determinant
         val detR1 = Vec2D.int(deltaB.y, -deltaB.x)
@@ -32,8 +32,9 @@ data class Machine(val deltaA: Vec2DInt, val deltaB: Vec2DInt, val prizePos: Vec
             deltaA.x.toBigInteger() * adjPrizePos.y - deltaA.y.toBigInteger() * adjPrizePos.x)
 
         // Mod these by determinant, and if zero, divide
-        return if (abDet % determinant == Vec2DBigIntZero)
-            abDet / determinant
+        val detBigInt = determinant.toBigInteger()
+        return if (abDet % detBigInt == Vec2DBigIntZero)
+            abDet / detBigInt
         else
             null
     }

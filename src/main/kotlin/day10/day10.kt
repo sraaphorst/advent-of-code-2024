@@ -5,8 +5,8 @@ package day10
 
 import common.aocreader.fetchAdventOfCodeInput
 import common.gridalgorithms.*
-import common.vec2d.*
 import common.runner.timedFunction
+import common.vec2d.*
 
 private typealias Trail = List<Vec2DInt>
 private typealias Trails = Set<List<Vec2DInt>>
@@ -16,6 +16,9 @@ private fun parse(input: String): List<List<Int>> =
         .map { line -> line.trim().toList().map { it.digitToIntOrNull() ?: -1 } }
 
 private fun findTrails(grid: List<List<Int>>): Map<Vec2DInt, Trails> {
+    val rows = grid.size
+    val cols = grid[0].size
+
     val zeros = grid.flatMapIndexed { rowIdx, row ->
         row.mapIndexedNotNull { colIdx, height ->
             if (height == 0) Vec2D.int(rowIdx, colIdx) else null
