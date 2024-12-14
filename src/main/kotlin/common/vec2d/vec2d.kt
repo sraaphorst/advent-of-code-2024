@@ -112,6 +112,23 @@ class Vec2D<T : Number> private constructor(
     operator fun component1(): T = x
     operator fun component2(): T = y
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true // Same instance check
+        if (other !is Vec2D<*>) return false // Type check
+
+        // Ensure the arithmetic type matches and the values of x and y are equal
+        return this.arithmetic.type == other.arithmetic.type &&
+                this.x == other.x &&
+                this.y == other.y
+    }
+
+    override fun hashCode(): Int {
+        var result = arithmetic.type.hashCode()
+        result = 31 * result + x.hashCode()
+        result = 31 * result + y.hashCode()
+        return result
+    }
+
     fun toInt(): Vec2D<Int> =
         Vec2D(IntArithmetic, x.toInt(), y.toInt())
     fun toLong(): Vec2D<Long> =
