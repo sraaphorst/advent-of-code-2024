@@ -32,11 +32,10 @@ class Robot(private val startPos: Vec2DInt, val velocity: Vec2DInt) {
     }
 }
 
+// This is a nasty hack to get the room size right, but this was a nasty puzzle.
 fun parse(input: String): Pair<Room, List<Robot>> {
-    val lines = input.trim().lines()
-    val roomCoords = lines.first().trim().split(",").map(String::toInt)
-    val room = Room(roomCoords[0], roomCoords[1])
-    val robots = lines.drop(1).map(Robot::parse)
+    val room = if (input.lines().size < 20) Room(11, 7) else Room(101, 103)
+    val robots = input.trim().lines().map(Robot::parse)
     return Pair(room, robots)
 }
 
@@ -74,6 +73,6 @@ fun answer2(input: String): Int {
 fun main() {
     val input = fetchAdventOfCodeInput(2024, 14)
     println("--- Day 14: Restroom Redoubt ---")
-    timedFunction("Part 1") { answer1("101,103\n" + input) } // 231221760
-    timedFunction("Part 2") { answer2("101,103\n" + input) } // 6771
+    timedFunction("Part 1") { answer1(input) } // 231221760
+    timedFunction("Part 2") { answer2(input) } // 6771
 }

@@ -10,7 +10,6 @@ class Day14 {
     companion object {
         val input1 =
             """
-            11,7
             p=0,4 v=3,-3
             p=6,3 v=-1,-3
             p=10,3 v=-1,2
