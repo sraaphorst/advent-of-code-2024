@@ -6,8 +6,11 @@ package common.aocreader
 import java.net.HttpURLConnection
 import java.net.URI
 
+private fun getCookie(): String =
+    System.getenv("AOC_SESSION") ?: {}::class.java.getResource("/cookie")!!.readText().trim()
+
 fun fetchAdventOfCodeInput(year: Int, day: Int): String {
-    val sessionCookie = {}::class.java.getResource("/cookie")!!.readText().trim()
+    val sessionCookie = getCookie()
     val url = URI("https://adventofcode.com/$year/day/$day/input").toURL()
     val connection = url.openConnection() as HttpURLConnection
     connection.requestMethod = "GET"
